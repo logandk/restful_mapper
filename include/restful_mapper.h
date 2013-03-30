@@ -1,0 +1,7 @@
+#ifndef RESTFUL_MAPPER_H_20130306
+#define RESTFUL_MAPPER_H_20130306
+
+#include "model.h"
+
+#endif // RESTFUL_MAPPER_H_20130306
+
