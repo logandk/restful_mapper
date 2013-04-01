@@ -1,5 +1,3 @@
 *
-!iconv
-!yajl
 !.gitignore
 !CMakeLists.txt
