@@ -2,7 +2,7 @@
 // Includes
 // --------------------------------------------------------------------------------
 #include <gtest/gtest.h>
-#include <relation.h>
+#include <restful_mapper/relation.h>
 #include <algorithm>
 
 using namespace std;

@@ -2,8 +2,8 @@
 // Includes
 // --------------------------------------------------------------------------------
 #include <gtest/gtest.h>
-#include <query.h>
-#include <iso8601.h>
+#include <restful_mapper/query.h>
+#include <restful_mapper/internal/iso8601.h>
 
 using namespace std;
 using namespace restful_mapper;

@@ -1,7 +1,7 @@
 #ifndef RELATION_H_20130318
 #define RELATION_H_20130318
 
-#include "collector.h"
+#include <restful_mapper/collector.h>
 
 namespace restful_mapper
 {

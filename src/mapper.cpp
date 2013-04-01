@@ -1,5 +1,5 @@
-#include "mapper.h"
-#include "json.h"
+#include <restful_mapper/mapper.h>
+#include <restful_mapper/internal/json.h>
 
 using namespace std;
 using namespace restful_mapper;

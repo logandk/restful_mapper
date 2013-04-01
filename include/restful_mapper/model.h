@@ -1,9 +1,9 @@
 #ifndef MODEL_H_20130306
 #define MODEL_H_20130306
 
-#include "api.h"
-#include "mapper.h"
-#include "query.h"
+#include <restful_mapper/api.h>
+#include <restful_mapper/mapper.h>
+#include <restful_mapper/query.h>
 
 namespace restful_mapper
 {

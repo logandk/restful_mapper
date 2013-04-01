@@ -1,8 +1,8 @@
 #ifndef MAPPER_H_20130307
 #define MAPPER_H_20130307
 
-#include "field.h"
-#include "relation.h"
+#include <restful_mapper/field.h>
+#include <restful_mapper/relation.h>
 
 namespace restful_mapper
 {

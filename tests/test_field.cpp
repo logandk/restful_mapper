@@ -2,7 +2,7 @@
 // Includes
 // --------------------------------------------------------------------------------
 #include <gtest/gtest.h>
-#include <field.h>
+#include <restful_mapper/field.h>
 
 using namespace std;
 using namespace restful_mapper;

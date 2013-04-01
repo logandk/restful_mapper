@@ -1,6 +1,6 @@
-#include "api.h"
-#include "meta.h"
-#include "json.h"
+#include <restful_mapper/api.h>
+#include <restful_mapper/meta.h>
+#include <restful_mapper/internal/json.h>
 #include <curl/curl.h>
 #include <sstream>
 

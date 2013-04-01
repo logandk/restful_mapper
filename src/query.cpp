@@ -1,5 +1,5 @@
-#include "query.h"
-#include "json.h"
+#include <restful_mapper/query.h>
+#include <restful_mapper/internal/json.h>
 
 using namespace std;
 using namespace restful_mapper;

@@ -11,7 +11,7 @@ extern "C" {
 #include <yajl/yajl_tree.h>
 }
 
-#include "utf8.h"
+#include <restful_mapper/internal/utf8.h>
 
 // Helper macros
 #define YAJL_IS_UNICODE(v)  YAJL_IS_STRING(v)
