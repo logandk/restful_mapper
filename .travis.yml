@@ -1,4 +1,10 @@
 language: cpp
 compiler: gcc
-install: make vendor
-script: make test
+python: "2.7"
+install:
+- make vendor
+- pip install -r tests/mocks/requirements.txt
+before_script:
+- python tests/mocks/rest_webservice.py &
+script:
+- make test
