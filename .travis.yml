@@ -1,6 +1,8 @@
 language: cpp
 compiler: gcc
 python: "2.7"
+virtualenv:
+  system_site_packages: true
 install:
 - make vendor
 - pip install -r tests/mocks/requirements.txt --use-mirrors
