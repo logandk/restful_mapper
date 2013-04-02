@@ -1,3 +1,3 @@
 Flask==0.9
-Flask-Restless==0.9.3
+https://github.com/logandk/flask-restless/archive/master.zip#egg=Flask-Restless==0.10.0-dev
 Flask-SQLAlchemy==0.16
