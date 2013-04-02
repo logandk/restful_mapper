@@ -7,16 +7,13 @@ add_definitions(-DLIBDIR=)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libcharset)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libcharset/include)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcharset/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/libcharset/config.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcharset/include/localcharset.h.in ${CMAKE_CURRENT_BINARY_DIR}/libcharset/include/localcharset.h)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/libcharset)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/libcharset/include)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcharset/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/libcharset/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcharset/include/localcharset.h.in ${CMAKE_CURRENT_SOURCE_DIR}/libcharset/include/localcharset.h)
 
 add_library(charset libcharset/lib/localcharset.c)
 
 install(TARGETS charset DESTINATION lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcharset/include/localcharset.h DESTINATION include)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libcharset/include/localcharset.h DESTINATION include)
 
 # Build libiconv
 add_definitions(-DLIBICONV_PLUG)
@@ -34,14 +31,11 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/iconv.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/iconv.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/iconv.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/iconv.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
 
 add_library(iconv lib/iconv.c)
 
 install(TARGETS iconv DESTINATION lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/iconv.h DESTINATION include)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/iconv.h DESTINATION include)

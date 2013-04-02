@@ -1,0 +1,15 @@
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_CURRENT_SOURCE_DIR}/../gtest/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy
+  ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy
+  ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
+

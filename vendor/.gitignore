@@ -1,4 +1,6 @@
 *
+!curl
+!gtest
 !iconv
 !yajl
 !.gitignore

@@ -1,0 +1,3 @@
+*
+!.gitignore
+!borland-patch.cmake
