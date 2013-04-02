@@ -13,6 +13,8 @@ using namespace restful_mapper;
 // --------------------------------------------------------------------------------
 TEST(QueryTest, GenerateQuery)
 {
+  local_charset = "latin1";
+
   putenv("TZ=CET-1");
   tzset();
 

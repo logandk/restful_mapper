@@ -1,8 +1,11 @@
 #include <restful_mapper/internal/utf8.h>
 #include <sstream>
 #include <iconv.h>
+#include <errno.h>
 
 using namespace std;
+
+string local_charset = "";
 
 string iconv_string(const string &value, const char *to, const char *from)
 {
@@ -75,10 +78,10 @@ string iconv_string(const string &value, const char *to, const char *from)
 
 string local_to_utf8(const string &value)
 {
-  return iconv_string(value, "UTF-8//TRANSLIT", "");
+  return iconv_string(value, "UTF-8", local_charset.c_str());
 }
 
 string utf8_to_local(const string &value)
 {
-  return iconv_string(value, "//TRANSLIT", "UTF-8");
+  return iconv_string(value, local_charset.c_str(), "UTF-8");
 }

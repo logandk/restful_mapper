@@ -8,10 +8,6 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
 
-#if (WIN32)
-#  set (gtest_disable_pthreads 1)
-#endif()
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 
@@ -29,5 +25,13 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../vendor/iconv/lib)
 
 FILE(GLOB test_files "test_*.cpp")
 add_executable(tests ${test_files})
-target_link_libraries(tests gtest gtest_main restful_mapper yajl curl ws2_32 iconv charset)
+target_link_libraries(tests gtest gtest_main restful_mapper yajl curl)
+
+if (WIN32)
+  target_link_libraries(tests ws2_32 iconv charset)
+endif()
+
+if (UNIX)
+  target_link_libraries(tests idn pthread)
+endif()
 
