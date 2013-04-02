@@ -1,0 +1,4 @@
+language: cpp
+compiler: gcc
+install: make vendor
+script: make test
