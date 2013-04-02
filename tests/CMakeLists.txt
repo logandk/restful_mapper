@@ -25,13 +25,13 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../vendor/iconv/lib)
 
 FILE(GLOB test_files "test_*.cpp")
 add_executable(tests ${test_files})
-target_link_libraries(tests gtest gtest_main restful_mapper yajl curl)
+target_link_libraries(tests gtest gtest_main restful_mapper yajl)
 
 if (WIN32)
-  target_link_libraries(tests ws2_32 iconv charset)
+  target_link_libraries(tests ws2_32 iconv charset libcurl)
 endif()
 
 if (UNIX)
-  target_link_libraries(tests idn pthread)
+  target_link_libraries(tests idn pthread curl)
 endif()
 

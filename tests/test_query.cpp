@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <restful_mapper/query.h>
 #include <restful_mapper/internal/iso8601.h>
+#include <restful_mapper/internal/utf8.h>
 
 using namespace std;
 using namespace restful_mapper;
