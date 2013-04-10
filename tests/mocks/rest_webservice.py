@@ -30,11 +30,7 @@ class UTCDateTime(types.TypeDecorator):
 
 class ValidationError(Exception):
     def __init__(self, field, message):
-
-        # Call the base class constructor with the parameters it needs
         Exception.__init__(self, message)
-
-        # Now for your custom code...
         self.errors = { field: message }
 
 
@@ -45,7 +41,7 @@ api = restless.APIManager(app, flask_sqlalchemy_db=db)
 
 # Database configuration
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 #app.config['SQLALCHEMY_ECHO'] = True
 
 # Monkeypatches
