@@ -194,12 +194,101 @@ Each entity can hold a number of fields and relationships:
 
 The interface specified the following methods, which must be overriden:
 
-* `virtual void restful_mapper::Model::map_set(Mapper &mapper) const`
-* `virtual void restful_mapper::Model::map_get(const Mapper &mapper)`
-* `virtual std::string restful_mapper::Model::endpoint() const`
-* `virtual Primary &restful_mapper::Model::primary()`
+* `virtual void restful_mapper::Model::map_set(Mapper &mapper) const`<br/>
+  Invoked upon saving an object to the web service.
+* `virtual void restful_mapper::Model::map_get(const Mapper &mapper)`<br/>
+  Invoked upon requesting an object from the web service.
+* `virtual std::string restful_mapper::Model::endpoint() const`<br/>
+  Specifies the API endpoint for this particular model. Relative to the web service
+  root URL.
+* `virtual Primary &restful_mapper::Model::primary()`<br/>
+  Specifies the primary key of the model.
 
 ## Working with objects ##
+
+Using the models defined above, the following operations are made available by
+**restful_mapper**.
+
+### Requesting data ###
+
+```c++
+// Find a single item by id
+Todo t = Todo::find(2);
+
+// Outputting fields
+cout << t.task.get();
+
+// Explicit conversions
+cout << (string) t.task;
+
+// Reload data from server
+t.reload();
+
+// Get all items in collection
+Todo::Collection todos = Todo::find_all();
+```
+
+### Saving data ###
+
+```c++
+// Create a new item
+Todo new_todo;
+new_todo.task = "Use restful_mapper";
+new_todo.save();
+
+// Update an existing item
+Todo old_todo = Todo::find(2);
+old_todo.completed = true;
+old_todo.save();
+
+// Deleting an item
+old_todo.destroy();
+```
+
+### Relationships ###
+
+```c++
+// Find an item including related items
+User u = User::find(1);
+
+// Get a related todo
+u.todos[2].task = "Do something else";
+
+// Delete last item
+u.todos.pop_back();
+
+// Add a new related item
+Todo new_todo;
+new_todo.task = "Use restful_mapper";
+u.todos.push_back(new_todo);
+
+// Save user including all changes to related todos - will delete one, update one and add one todo
+u.save();
+
+// Objects in one-to-one and many-to-one relationships are managed pointers
+Todo t = Todo::find(2);
+cout << t.user->email.get();
+```
+
+### Querying ###
+
+Supports the query operations [specified][11] by [Flask-Restless][4].
+
+```c++
+// Query a single item
+Query q;
+q("task").like("Do someth%");
+q("completed").eq(true);
+
+Todo todo = Todo::find(q);
+
+// Query a collection of items
+Query q;
+q("time").gt("1.45").lt("3.0");
+q.order_by_asc(q.field("priority"));
+
+Todo::Collection todos = Todo::find_all(q);
+```
 
 # Contributing #
 
@@ -207,13 +296,13 @@ Pull requests on [GitHub][1] are very welcome! Please try to follow these simple
 
 * Please create a topic branch for every separate change you make.
 * Make sure your patches are well tested. All tests must pass on [Travis CI][2].
-* Update this [`README.md`](http://github.com/logandk/restful_mapper/README.md) if applicable.
+* Update this [`README.md`](http://github.com/logandk/restful_mapper/blob/master/README.md) if applicable.
 
 # License #
 
 This code is copyright 2013 Logan Raarup, and is released under the revised BSD License.
 
-For more information, see [`LICENSE`](http://github.com/logandk/restful_mapper/LICENSE).
+For more information, see [`LICENSE`](http://github.com/logandk/restful_mapper/blob/master/LICENSE).
 
 
 [1]: http://github.com/logandk/restful_mapper
@@ -226,3 +315,4 @@ For more information, see [`LICENSE`](http://github.com/logandk/restful_mapper/L
 [8]: http://lloyd.github.io/yajl
 [9]: http://www.gnu.org/software/libiconv
 [10]: https://code.google.com/p/googletest
+[11]: https://flask-restless.readthedocs.org/en/latest/searchformat.html#queryformat
