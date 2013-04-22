@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>restful_mapper by logandk</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>restful_mapper</h1>
+        <p>ORM for consuming RESTful APIs in C++</p>
+        <p class="view"><a href="https://github.com/logandk/restful_mapper">View the Project on GitHub <small>logandk/restful_mapper</small></a></p>
+        <ul>
+          <li><a href="https://github.com/logandk/restful_mapper/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/logandk/restful_mapper/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/logandk/restful_mapper">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>restful_mapper</h1>
+
+<p>ORM for consuming RESTful APIs in C++</p>
+
+<p><a href="http://travis-ci.org/logandk/restful_mapper"><img src="https://secure.travis-ci.org/logandk/restful_mapper.png" alt="Build status"></a></p>
+
+<h1>Introduction</h1>
+
+<p><strong>restful_mapper</strong> connects business objects and Representational State
+Transfer (REST) web services. It implements object-relational mapping for REST
+web services to provide transparent proxying capabilities between a client
+(using <strong>restful_mapper</strong>) and a RESTful web service (that follows the
+conventions outlined below).</p>
+
+<p>The ideas and design philosophy are directly adopted from <a href="https://github.com/rails/activeresource">Active Resource</a>.
+However, the API and functionality differ in some areas, where it makes sense.</p>
+
+<h2>Design goals</h2>
+
+<ul>
+<li>
+<em>Simple</em>: Employ the principle of least surprise -- APIs should be clean and
+intuitive</li>
+<li>
+<em>Portable</em>: Support old compilers -- all code is C++03 and C</li>
+<li>
+<em>Robust</em>: Keep the code base small -- rely on proven and stable libraries to
+provide core functionality</li>
+<li>
+<em>Internationalized</em>: Handle timezones and character sets automatically</li>
+</ul><h2>RESTful web service conventions</h2>
+
+<p>RESTful web services come in many different forms, which are not all suitable
+for an ORM-style mapper such as <strong>restful_mapper</strong>. In order to be compatible
+with as many web services as possible, <strong>restful_mapper</strong> complies with the
+current best-practice for creating RESTful web services with JSON.</p>
+
+<p>Specifically, <strong>restful_mapper</strong> is modelled against the <a href="https://github.com/jfinkels/flask-restless">Flask-Restless</a>
+library, which provides full-featured RESTful web services that follow best-
+practice design methods.</p>
+
+<p>The following basic conventions must be followed by the web service:</p>
+
+<ul>
+<li>Uses standard <code>DELETE</code>, <code>GET</code>, <code>POST</code> and <code>PUT</code> requests for CRUD-operations</li>
+<li>Collection of objects should use <code>objects</code> as the root JSON key</li>
+<li>Objects in a relationship should be represented as nested JSON structures</li>
+<li>If authentication is used, it must be HTTP basic authentication</li>
+</ul><p>For exact details on expected request and response formats, see <a href="https://flask-restless.readthedocs.org/en/latest/requestformat.html">Format of requests and responses</a>.</p>
+
+<h1>Building</h1>
+
+<p><strong>restful_mapper</strong> is built using <a href="http://www.cmake.org">CMake</a>.</p>
+
+<h2>Dependencies</h2>
+
+<p>The following libraries are required to build <strong>restful_mapper</strong>.</p>
+
+<ul>
+<li>
+<a href="http://curl.haxx.se/libcurl">libcurl</a> - used for comminucating with the web service over HTTP</li>
+<li>
+<a href="http://lloyd.github.io/yajl">yajl</a> - used to parse and emit JSON</li>
+<li>
+<a href="http://www.gnu.org/software/libiconv">libiconv</a> - used to convert between character sets</li>
+<li>
+<a href="https://code.google.com/p/googletest">googletest</a> - required for tests only</li>
+</ul><p>Invoking the following command will download and build these libraries.</p>
+
+<pre lang="shell"><code>make vendor
+</code></pre>
+
+<p>On UNIX platforms, <a href="http://curl.haxx.se/libcurl">libcurl</a> and <a href="http://www.gnu.org/software/libiconv">libiconv</a> are typically present on the
+system, and will not be built by the make command. If they are not present,
+they should be installed using the system package manager.</p>
+
+<h2>Library</h2>
+
+<p>After building the dependencies, invoke the following command to build <strong>restful_mapper</strong>.</p>
+
+<pre lang="shell"><code>make
+</code></pre>
+
+<p>This will install <strong>restful_mapper</strong> as a static library in the <code>lib</code> folder.</p>
+
+<h2>Tests</h2>
+
+<p>The test suite can be built and run using the following command.</p>
+
+<pre lang="shell"><code>make test
+</code></pre>
+
+<h1>Usage</h1>
+
+<h2>API configuration</h2>
+
+<p>Before making any requests to the web service, it must be configured using the
+following methods.</p>
+
+<p>The root URL of the web service is specified using the <code>set_url</code> method:</p>
+
+<div class="highlight"><pre><span class="n">Api</span><span class="o">::</span><span class="n">set_url</span><span class="p">(</span><span class="s">"http://localhost:5000/api"</span><span class="p">);</span>
+</pre></div>
+
+<p>If the web service requires authentication, provide the username and password:</p>
+
+<div class="highlight"><pre><span class="n">Api</span><span class="o">::</span><span class="n">set_username</span><span class="p">(</span><span class="s">"admin"</span><span class="p">);</span>
+<span class="n">Api</span><span class="o">::</span><span class="n">set_password</span><span class="p">(</span><span class="s">"test"</span><span class="p">);</span>
+</pre></div>
+
+<p>If you are using a proxy server, it can be specified through the <code>HTTP_PROXY</code>
+environment variable or using the <code>set_proxy</code> method:</p>
+
+<div class="highlight"><pre><span class="n">Api</span><span class="o">::</span><span class="n">set_proxy</span><span class="p">(</span><span class="s">"http://myproxy"</span><span class="p">);</span>
+</pre></div>
+
+<h2>Mapper configuration</h2>
+
+<p>This example illustrates a complete object mapping:</p>
+
+<div class="highlight"><pre><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">restful_mapper</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Todo</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Model</span><span class="o">&lt;</span><span class="n">Todo</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="n">Primary</span> <span class="n">id</span><span class="p">;</span>
+  <span class="n">Field</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">task</span><span class="p">;</span>
+  <span class="n">Field</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">priority</span><span class="p">;</span>
+  <span class="n">Field</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">time</span><span class="p">;</span>
+  <span class="n">Field</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">completed</span><span class="p">;</span>
+  <span class="n">Field</span><span class="o">&lt;</span><span class="kt">time_t</span><span class="o">&gt;</span> <span class="n">completed_on</span><span class="p">;</span>
+  <span class="n">Field</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">user_id</span><span class="p">;</span>
+  <span class="n">HasOne</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">user</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">map_set</span><span class="p">(</span><span class="n">Mapper</span> <span class="o">&amp;</span><span class="n">mapper</span><span class="p">)</span> <span class="k">const</span>
+  <span class="p">{</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"id"</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"task"</span><span class="p">,</span> <span class="n">task</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"priority"</span><span class="p">,</span> <span class="n">priority</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"time"</span><span class="p">,</span> <span class="n">time</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"completed"</span><span class="p">,</span> <span class="n">completed</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"completed_on"</span><span class="p">,</span> <span class="n">completed_on</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"user_id"</span><span class="p">,</span> <span class="n">user_id</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span> <span class="n">user</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">map_get</span><span class="p">(</span><span class="k">const</span> <span class="n">Mapper</span> <span class="o">&amp;</span><span class="n">mapper</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"id"</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"task"</span><span class="p">,</span> <span class="n">task</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"priority"</span><span class="p">,</span> <span class="n">priority</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"time"</span><span class="p">,</span> <span class="n">time</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"completed"</span><span class="p">,</span> <span class="n">completed</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"completed_on"</span><span class="p">,</span> <span class="n">completed_on</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"user_id"</span><span class="p">,</span> <span class="n">user_id</span><span class="p">);</span>
+    <span class="n">mapper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span> <span class="n">user</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">endpoint</span><span class="p">()</span> <span class="k">const</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="s">"/todo"</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">virtual</span> <span class="n">Primary</span> <span class="o">&amp;</span><span class="n">primary</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="n">id</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="o">:</span> <span class="k">public</span> <span class="n">Model</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="n">Primary</span> <span class="n">id</span><span class="p">;</span>
+  <span class="n">HasMany</span><span class="o">&lt;</span><span class="n">Todo</span><span class="o">&gt;</span> <span class="n">todos</span><span class="p">;</span>
+  <span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>An API entity is declared by creating a class that inherits from and follows the
+interface defined in <code>restful_mapper::Model</code>.</p>
+
+<p>Each entity can hold a number of fields and relationships:</p>
+
+<ul>
+<li>
+<code>restful_mapper::Primary</code> -- maps a primary key (integer)</li>
+<li>
+<code>restful_mapper::Field&lt;string&gt;</code> -- maps a string literal (represented in locale charset)</li>
+<li>
+<code>restful_mapper::Field&lt;int&gt;</code> -- maps an integer value</li>
+<li>
+<code>restful_mapper::Field&lt;double&gt;</code> -- maps a floating point value</li>
+<li>
+<code>restful_mapper::Field&lt;bool&gt;</code> -- maps a boolean value</li>
+<li>
+<code>restful_mapper::Field&lt;time_t&gt;</code> -- maps a datetime value (represented in the local timezone)</li>
+<li>
+<code>restful_mapper::HasOne&lt;class&gt;</code> -- maps a one-to-one or many-to-one relationship</li>
+<li>
+<code>restful_mapper::HasMany&lt;class&gt;</code> -- maps a one-to-many relationship</li>
+</ul><p>The interface specified the following methods, which must be overriden:</p>
+
+<ul>
+<li><code>virtual void restful_mapper::Model::map_set(Mapper &amp;mapper) const</code></li>
+<li><code>virtual void restful_mapper::Model::map_get(const Mapper &amp;mapper)</code></li>
+<li><code>virtual std::string restful_mapper::Model::endpoint() const</code></li>
+<li><code>virtual Primary &amp;restful_mapper::Model::primary()</code></li>
+</ul><h2>Working with objects</h2>
+
+<h1>Contributing</h1>
+
+<p>Pull requests on <a href="http://github.com/logandk/restful_mapper">GitHub</a> are very welcome! Please try to follow these simple rules:</p>
+
+<ul>
+<li>Please create a topic branch for every separate change you make.</li>
+<li>Make sure your patches are well tested. All tests must pass on <a href="http://travis-ci.org/logandk/restful_mapper">Travis CI</a>.</li>
+<li>Update this <a href="http://github.com/logandk/restful_mapper/README.md"><code>README.md</code></a> if applicable.</li>
+</ul><h1>License</h1>
+
+<p>This code is copyright 2013 Logan Raarup, and is released under the revised BSD License.</p>
+
+<p>For more information, see <a href="http://github.com/logandk/restful_mapper/LICENSE"><code>LICENSE</code></a>.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/logandk">logandk</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
