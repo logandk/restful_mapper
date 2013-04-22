@@ -70,13 +70,13 @@ TEST(ApiTest, ProxyValid)
   Api::clear_proxy();
   Api::set_proxy("");
 
-  ASSERT_NO_THROW(Api::get("http://localhost:5000/api/reload"));
+  ASSERT_NO_THROW(Api::get("/reload"));
 }
 
 TEST(ApiTest, ProxyInvalid)
 {
   Api::set_proxy("an-invalid-hostname");
 
-  ASSERT_THROW(Api::get("http://localhost:5000/api/reload"), ResponseError);
+  ASSERT_THROW(Api::get("/reload"), ResponseError);
 }
 
