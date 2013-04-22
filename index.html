@@ -244,11 +244,100 @@ interface defined in <code>restful_mapper::Model</code>.</p>
 </ul><p>The interface specified the following methods, which must be overriden:</p>
 
 <ul>
-<li><code>virtual void restful_mapper::Model::map_set(Mapper &amp;mapper) const</code></li>
-<li><code>virtual void restful_mapper::Model::map_get(const Mapper &amp;mapper)</code></li>
-<li><code>virtual std::string restful_mapper::Model::endpoint() const</code></li>
-<li><code>virtual Primary &amp;restful_mapper::Model::primary()</code></li>
+<li>
+<code>virtual void restful_mapper::Model::map_set(Mapper &amp;mapper) const</code><br>
+Invoked upon saving an object to the web service.</li>
+<li>
+<code>virtual void restful_mapper::Model::map_get(const Mapper &amp;mapper)</code><br>
+Invoked upon requesting an object from the web service.</li>
+<li>
+<code>virtual std::string restful_mapper::Model::endpoint() const</code><br>
+Specifies the API endpoint for this particular model. Relative to the web service
+root URL.</li>
+<li>
+<code>virtual Primary &amp;restful_mapper::Model::primary()</code><br>
+Specifies the primary key of the model.</li>
 </ul><h2>Working with objects</h2>
+
+<p>Using the models defined above, the following operations are made available by
+<strong>restful_mapper</strong>.</p>
+
+<h3>Requesting data</h3>
+
+<div class="highlight"><pre><span class="c1">// Find a single item by id</span>
+<span class="n">Todo</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="c1">// Outputting fields</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">t</span><span class="p">.</span><span class="n">task</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+
+<span class="c1">// Explicit conversions</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="n">t</span><span class="p">.</span><span class="n">task</span><span class="p">;</span>
+
+<span class="c1">// Reload data from server</span>
+<span class="n">t</span><span class="p">.</span><span class="n">reload</span><span class="p">();</span>
+
+<span class="c1">// Get all items in collection</span>
+<span class="n">Todo</span><span class="o">::</span><span class="n">Collection</span> <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find_all</span><span class="p">();</span>
+</pre></div>
+
+<h3>Saving data</h3>
+
+<div class="highlight"><pre><span class="c1">// Create a new item</span>
+<span class="n">Todo</span> <span class="n">new_todo</span><span class="p">;</span>
+<span class="n">new_todo</span><span class="p">.</span><span class="n">task</span> <span class="o">=</span> <span class="s">"Use restful_mapper"</span><span class="p">;</span>
+<span class="n">new_todo</span><span class="p">.</span><span class="n">save</span><span class="p">();</span>
+
+<span class="c1">// Update an existing item</span>
+<span class="n">Todo</span> <span class="n">old_todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">old_todo</span><span class="p">.</span><span class="n">completed</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="n">old_todo</span><span class="p">.</span><span class="n">save</span><span class="p">();</span>
+
+<span class="c1">// Deleting an item</span>
+<span class="n">old_todo</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+</pre></div>
+
+<h3>Relationships</h3>
+
+<div class="highlight"><pre><span class="c1">// Find an item including related items</span>
+<span class="n">User</span> <span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">// Get a related todo</span>
+<span class="n">u</span><span class="p">.</span><span class="n">todos</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">task</span> <span class="o">=</span> <span class="s">"Do something else"</span><span class="p">;</span>
+
+<span class="c1">// Delete last item</span>
+<span class="n">u</span><span class="p">.</span><span class="n">todos</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+
+<span class="c1">// Add a new related item</span>
+<span class="n">Todo</span> <span class="n">new_todo</span><span class="p">;</span>
+<span class="n">new_todo</span><span class="p">.</span><span class="n">task</span> <span class="o">=</span> <span class="s">"Use restful_mapper"</span><span class="p">;</span>
+<span class="n">u</span><span class="p">.</span><span class="n">todos</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">new_todo</span><span class="p">);</span>
+
+<span class="c1">// Save user including all changes to related todos - will delete one, update one and add one todo</span>
+<span class="n">u</span><span class="p">.</span><span class="n">save</span><span class="p">();</span>
+
+<span class="c1">// Objects in one-to-one and many-to-one relationships are managed pointers</span>
+<span class="n">Todo</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">t</span><span class="p">.</span><span class="n">user</span><span class="o">-&gt;</span><span class="n">email</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+</pre></div>
+
+<h3>Querying</h3>
+
+<p>Supports the query operations <a href="https://flask-restless.readthedocs.org/en/latest/searchformat.html#queryformat">specified</a> by <a href="https://github.com/jfinkels/flask-restless">Flask-Restless</a>.</p>
+
+<div class="highlight"><pre><span class="c1">// Query a single item</span>
+<span class="n">Query</span> <span class="n">q</span><span class="p">;</span>
+<span class="n">q</span><span class="p">(</span><span class="s">"task"</span><span class="p">).</span><span class="n">like</span><span class="p">(</span><span class="s">"Do someth%"</span><span class="p">);</span>
+<span class="n">q</span><span class="p">(</span><span class="s">"completed"</span><span class="p">).</span><span class="n">eq</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+
+<span class="n">Todo</span> <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+
+<span class="c1">// Query a collection of items</span>
+<span class="n">Query</span> <span class="n">q</span><span class="p">;</span>
+<span class="n">q</span><span class="p">(</span><span class="s">"time"</span><span class="p">).</span><span class="n">gt</span><span class="p">(</span><span class="s">"1.45"</span><span class="p">).</span><span class="n">lt</span><span class="p">(</span><span class="s">"3.0"</span><span class="p">);</span>
+<span class="n">q</span><span class="p">.</span><span class="n">order_by_asc</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">"priority"</span><span class="p">));</span>
+
+<span class="n">Todo</span><span class="o">::</span><span class="n">Collection</span> <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find_all</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+</pre></div>
 
 <h1>Contributing</h1>
 
@@ -257,12 +346,12 @@ interface defined in <code>restful_mapper::Model</code>.</p>
 <ul>
 <li>Please create a topic branch for every separate change you make.</li>
 <li>Make sure your patches are well tested. All tests must pass on <a href="http://travis-ci.org/logandk/restful_mapper">Travis CI</a>.</li>
-<li>Update this <a href="http://github.com/logandk/restful_mapper/README.md"><code>README.md</code></a> if applicable.</li>
+<li>Update this <a href="http://github.com/logandk/restful_mapper/blob/master/README.md"><code>README.md</code></a> if applicable.</li>
 </ul><h1>License</h1>
 
 <p>This code is copyright 2013 Logan Raarup, and is released under the revised BSD License.</p>
 
-<p>For more information, see <a href="http://github.com/logandk/restful_mapper/LICENSE"><code>LICENSE</code></a>.</p>
+<p>For more information, see <a href="http://github.com/logandk/restful_mapper/blob/master/LICENSE"><code>LICENSE</code></a>.</p>
       </section>
 
     </div>
