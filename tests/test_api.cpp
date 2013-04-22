@@ -65,3 +65,18 @@ TEST(ApiTest, ValidationErrorJson)
   ASSERT_STREQ("", err2.what());
 }
 
+TEST(ApiTest, ProxyValid)
+{
+  Api::clear_proxy();
+  Api::set_proxy("");
+
+  ASSERT_NO_THROW(Api::get("http://localhost:5000/api/reload"));
+}
+
+TEST(ApiTest, ProxyInvalid)
+{
+  Api::set_proxy("an-invalid-hostname");
+
+  ASSERT_THROW(Api::get("http://localhost:5000/api/reload"), ResponseError);
+}
+

@@ -60,6 +60,9 @@ def debug_request_callback():
 
 @app.before_request
 def auth_request_callback():
+    if request.path == '/api/reload':
+        return
+
     auth = request.authorization
 
     if not auth or auth.username != 'admin' or auth.password != 'test':

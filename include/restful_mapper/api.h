@@ -64,6 +64,21 @@ public:
     return instance().url_ = url;
   }
 
+  static std::string proxy()
+  {
+    return instance().proxy_;
+  }
+
+  static std::string set_proxy(const std::string &proxy)
+  {
+    return instance().proxy_ = proxy;
+  }
+
+  static void clear_proxy()
+  {
+    instance().read_environment_proxy();
+  }
+
   static std::string username()
   {
     return instance().username_;
@@ -86,6 +101,7 @@ public:
 
 private:
   std::string url_;
+  std::string proxy_;
   std::string username_;
   std::string password_;
   static const char *user_agent_;
@@ -119,6 +135,9 @@ private:
 
   // Check whether an error occurred
   static void check_http_error(const RequestType &type, const std::string &endpoint, long &http_code, const std::string &response_body);
+
+  // Get environment proxy into proxy_
+  void read_environment_proxy();
 
   // Request methods
   std::string get_(const std::string &endpoint) const;

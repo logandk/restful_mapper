@@ -251,6 +251,7 @@ protected:
     Api::set_url("http://localhost:5000/api");
     Api::set_username("admin");
     Api::set_password("test");
+    Api::set_proxy("");
     Api::get("/reload");
   }
 };
@@ -513,8 +514,4 @@ TEST_F(ModelTest, Encoding)
   Todo t2 = Todo::find(4);
   ASSERT_STREQ("Strange characters \xF8 here", string(t2.task).c_str());
 }
-
-// TODO: Fixes in Flask-restless
-// TODO: Authorization (Flask-Principal)
-// TODO: More clean dependency compilation/requirement
 

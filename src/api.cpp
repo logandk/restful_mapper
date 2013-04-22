@@ -3,6 +3,7 @@
 #include <restful_mapper/internal/json.h>
 #include <curl/curl.h>
 #include <sstream>
+#include <cstdlib>
 
 using namespace std;
 using namespace restful_mapper;
@@ -33,6 +34,9 @@ Api::Api()
   {
     throw ApiError("Unable to initialize libcurl", 0);
   }
+
+  // Read environment proxy
+  read_environment_proxy();
 }
 
 // Free curl
@@ -176,6 +180,9 @@ string Api::send_request(const RequestType &type, const string &endpoint, const 
 
   // Set query URL
   curl_easy_setopt(CURL_HANDLE, CURLOPT_URL, url(endpoint).c_str());
+
+  // Set proxy
+  curl_easy_setopt(CURL_HANDLE, CURLOPT_PROXY, proxy_.c_str());
 
   switch (type)
   {
@@ -372,6 +379,18 @@ void Api::check_http_error(const RequestType &type, const string &endpoint, long
     s << "Server at \"" << url(endpoint) << "\" responded with code " << http_code;
 
     throw ResponseError(s.str(), http_code, response_body);
+  }
+}
+
+void Api::read_environment_proxy()
+{
+  if (getenv("HTTP_PROXY"))
+  {
+    proxy_ = getenv("HTTP_PROXY");
+  }
+  else
+  {
+    proxy_.clear();
   }
 }
 
