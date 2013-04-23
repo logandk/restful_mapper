@@ -70,8 +70,8 @@ string iconv_string(const string &value, const char *to, const char *from)
   iconv_close(conv);
 
   // Copy to string object
-  delete src;
-  delete dst;
+  delete[] src;
+  delete[] dst;
 
   return out;
 }

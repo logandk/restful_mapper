@@ -1,10 +1,25 @@
 language: cpp
-compiler: gcc
+
+compiler:
+- gcc
+- clang
+
+matrix:
+ include:
+   - compiler: i586-mingw32msvc-gcc
+
 python: "2.7"
+
 install:
 - make vendor
 - sudo pip install -r tests/mocks/requirements.txt --use-mirrors
+
 before_script:
 - python tests/mocks/rest_webservice.py &
+
 script:
 - make test
+
+after_success:
+ - valgrind --leak-check=yes ./tests/build/tests
+

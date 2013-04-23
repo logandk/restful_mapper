@@ -36,6 +36,7 @@ Mapper::Mapper(string json_struct, const int &flags)
 
   if (json_tree_ptr_ == NULL)
   {
+    yajl_gen_free(JSON_GEN_HANDLE);
     throw runtime_error(string("JSON parse error:\n") + errors);
   }
 }
