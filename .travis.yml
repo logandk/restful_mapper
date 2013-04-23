@@ -1,8 +1,8 @@
 language: cpp
 
 compiler:
-- gcc
-- clang
+  - gcc
+  - clang
 
 matrix:
  include:
@@ -11,14 +11,16 @@ matrix:
 python: "2.7"
 
 install:
-- make vendor
-- sudo pip install -r tests/mocks/requirements.txt --use-mirrors
+  - sudo apt-get update >/dev/null
+  - sudo apt-get -q install cmake valgrind
+  - make vendor
+  - sudo pip install -r tests/mocks/requirements.txt --use-mirrors
 
 before_script:
-- python tests/mocks/rest_webservice.py &
+  - python tests/mocks/rest_webservice.py &
 
 script:
-- make test
+  - make test
 
 after_success:
  - valgrind --leak-check=yes ./tests/build/tests

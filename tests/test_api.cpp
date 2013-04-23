@@ -67,6 +67,7 @@ TEST(ApiTest, ValidationErrorJson)
 
 TEST(ApiTest, ProxyValid)
 {
+  Api::set_url("http://localhost:5000/api");
   Api::clear_proxy();
   Api::set_proxy("");
 
@@ -75,6 +76,7 @@ TEST(ApiTest, ProxyValid)
 
 TEST(ApiTest, ProxyInvalid)
 {
+  Api::set_url("http://localhost:5000/api");
   Api::set_proxy("an-invalid-hostname");
 
   ASSERT_THROW(Api::get("/reload"), ResponseError);
