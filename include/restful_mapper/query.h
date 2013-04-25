@@ -1,5 +1,5 @@
-#ifndef QUERY_H_20130320
-#define QUERY_H_20130320
+#ifndef RESTFUL_MAPPER_QUERY_H
+#define RESTFUL_MAPPER_QUERY_H
 
 #include <string>
 #include <vector>
@@ -207,5 +207,5 @@ private:
 
 }
 
-#endif // QUERY_H_20130320
+#endif // RESTFUL_MAPPER_QUERY_H
 

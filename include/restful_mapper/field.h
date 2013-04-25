@@ -1,5 +1,5 @@
-#ifndef FIELD_H_20130306
-#define FIELD_H_20130306
+#ifndef RESTFUL_MAPPER_FIELD_H
+#define RESTFUL_MAPPER_FIELD_H
 
 #include <restful_mapper/api.h>
 #include <restful_mapper/internal/iso8601.h>
@@ -269,5 +269,5 @@ protected:
 
 }
 
-#endif // FIELD_H_20130306
+#endif // RESTFUL_MAPPER_FIELD_H
 

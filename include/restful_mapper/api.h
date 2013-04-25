@@ -1,5 +1,5 @@
-#ifndef API_H_20130306
-#define API_H_20130306
+#ifndef RESTFUL_MAPPER_API_H
+#define RESTFUL_MAPPER_API_H
 
 #include <stdexcept>
 #include <string>
@@ -242,5 +242,5 @@ private:
 
 }
 
-#endif // API_H_20130306
+#endif // RESTFUL_MAPPER_API_H
 

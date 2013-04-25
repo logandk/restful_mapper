@@ -1,7 +1,7 @@
-#ifndef META_H_20130308
-#define META_H_20130308
+#ifndef RESTFUL_MAPPER_META_H
+#define RESTFUL_MAPPER_META_H
 
 #define VERSION "0.2.0-dev"
 
-#endif // META_H_20130308
+#endif // RESTFUL_MAPPER_META_H
 

@@ -1,13 +1,13 @@
 .PHONY: all test vendor clean
 
 all:
-	cd build; cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR) ..; make all install
+	cd build; cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=$(CURDIR) ..; make all install
 
 test: all
-	cd tests/build; cmake ..; make; ./tests
+	cd tests/build; cmake ${CMAKE_ARGS} ..; make; ./tests
 
 vendor:
-	cd vendor; cmake .; make
+	cd vendor; cmake ${CMAKE_ARGS} .; make
 
 clean:
 	rm -f build/*.*

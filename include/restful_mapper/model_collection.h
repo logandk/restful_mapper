@@ -1,5 +1,5 @@
-#ifndef COLLECTION_H_20130315
-#define COLLECTION_H_20130315
+#ifndef RESTFUL_MAPPER_MODEL_COLLECTION_H
+#define RESTFUL_MAPPER_MODEL_COLLECTION_H
 
 #include <vector>
 #include <algorithm>
@@ -10,13 +10,13 @@ namespace restful_mapper
 {
 
 template <class T>
-class Collection
+class ModelCollection
 {
 public:
-  Collection() {}
-  Collection(const Collection &other) : items_(other.items_) {}
-  Collection &operator=(Collection other) { std::swap(*this, other); return *this; }
-  virtual ~Collection() {}
+  ModelCollection() {}
+  ModelCollection(const ModelCollection &other) : items_(other.items_) {}
+  ModelCollection &operator=(ModelCollection other) { std::swap(*this, other); return *this; }
+  virtual ~ModelCollection() {}
 
   const std::vector<T> &items() const
   {
@@ -32,7 +32,7 @@ public:
       if (i->primary() == id) return *i;
     }
 
-    ostringstream s;
+    std::ostringstream s;
     s << "Cannot find " << typeid(T).name() << " with id " << id;
     throw std::out_of_range(s.str());
   }
@@ -46,7 +46,7 @@ public:
       if (i->primary() == id) return *i;
     }
 
-    ostringstream s;
+    std::ostringstream s;
     s << "Cannot find " << typeid(T).name() << " with id " << id;
     throw std::out_of_range(s.str());
   }
@@ -96,7 +96,7 @@ public:
   template <class InputIterator> void insert(iterator position, InputIterator first, InputIterator last) { items_.insert(position, first, last); }
   iterator erase(iterator position) { return items_.erase(position); }
   iterator erase(iterator first, iterator last) { return items_.erase(first, last); }
-  void swap(Collection& x) { items_.swap(x); }
+  void swap(ModelCollection& x) { items_.swap(x); }
   void clear() { items_.clear(); }
   allocator_type get_allocator() const { return items_.get_allocator(); }
 
@@ -106,5 +106,5 @@ private:
 
 }
 
-#endif // COLLECTION_H_20130315
+#endif // RESTFUL_MAPPER_MODEL_COLLECTION_H
 

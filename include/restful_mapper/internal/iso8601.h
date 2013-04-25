@@ -1,5 +1,5 @@
-#ifndef ISO8601_H_20130314
-#define ISO8601_H_20130314
+#ifndef RESTFUL_MAPPER_ISO8601_H_20130314
+#define RESTFUL_MAPPER_ISO8601_H_20130314
 
 #include <cstdio>
 #include <cctype>
@@ -229,5 +229,5 @@ inline std::time_t from_iso8601(std::string descriptor)
   return std::mktime(&t) - tz_offset;
 }
 
-#endif // ISO8601_H_20130314
+#endif // RESTFUL_MAPPER_ISO8601_H_20130314
 

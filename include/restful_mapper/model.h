@@ -1,5 +1,5 @@
-#ifndef MODEL_H_20130306
-#define MODEL_H_20130306
+#ifndef RESTFUL_MAPPER_MODEL_H
+#define RESTFUL_MAPPER_MODEL_H
 
 #include <restful_mapper/api.h>
 #include <restful_mapper/mapper.h>
@@ -12,7 +12,7 @@ template <class T>
 class Model
 {
 public:
-  typedef Collection<T> Collection;
+  typedef ModelCollection<T> Collection;
 
   Model() : exists_(false) {}
 
@@ -187,5 +187,5 @@ protected:
 
 }
 
-#endif // MODEL_H_20130306
+#endif // RESTFUL_MAPPER_MODEL_H
 

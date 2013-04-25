@@ -1,21 +1,21 @@
-#ifndef RELATION_H_20130318
-#define RELATION_H_20130318
+#ifndef RESTFUL_MAPPER_RELATION_H
+#define RESTFUL_MAPPER_RELATION_H
 
-#include <restful_mapper/collection.h>
 #include <restful_mapper/collector.h>
+#include <restful_mapper/model_collection.h>
 
 namespace restful_mapper
 {
 
 template <class T>
-class HasMany : public Collection<T>
+class HasMany : public ModelCollection<T>
 {
 public:
-  HasMany() : Collection<T>(), is_dirty_(false) {}
+  HasMany() : ModelCollection<T>(), is_dirty_(false) {}
 
   void from_json(std::string values, const int &flags = 0)
   {
-    Collection<T>::clear();
+    ModelCollection<T>::clear();
 
     Collector collector(values);
 
@@ -27,7 +27,7 @@ public:
       T instance;
       instance.from_json(*i, flags);
 
-      Collection<T>::push_back(instance);
+      ModelCollection<T>::push_back(instance);
     }
   }
 
@@ -36,9 +36,9 @@ public:
     std::ostringstream s;
     s << "[";
 
-    const_iterator i, i_end = end();
+    const_iterator i, i_end = ModelCollection<T>::end();
 
-    for (i = begin(); i != i_end; ++i)
+    for (i = ModelCollection<T>::begin(); i != i_end; ++i)
     {
       s << i->to_json(flags);
       if ((i + 1) != i_end) s << ",";
@@ -52,14 +52,14 @@ public:
   T &build()
   {
     push_back(T());
-    return back();
+    return ModelCollection<T>::back();
   }
 
   bool is_dirty() const
   {
-    const_iterator i, i_end = end();
+    const_iterator i, i_end = ModelCollection<T>::end();
 
-    for (i = begin(); i != i_end; ++i)
+    for (i = ModelCollection<T>::begin(); i != i_end; ++i)
     {
       if (i->is_dirty()) return true;
     }
@@ -73,31 +73,31 @@ public:
   }
 
   // Inherit typedefs
-  typedef typename Collection<T>::value_type value_type;
-  typedef typename Collection<T>::allocator_type allocator_type;
-  typedef typename Collection<T>::reference reference;
-  typedef typename Collection<T>::const_reference const_reference;
-  typedef typename Collection<T>::pointer pointer;
-  typedef typename Collection<T>::const_pointer const_pointer;
-  typedef typename Collection<T>::iterator iterator;
-  typedef typename Collection<T>::const_iterator const_iterator;
-  typedef typename Collection<T>::reverse_iterator reverse_iterator;
-  typedef typename Collection<T>::const_reverse_iterator const_reverse_iterator;
-  typedef typename Collection<T>::difference_type difference_type;
-  typedef typename Collection<T>::size_type size_type;
+  typedef typename ModelCollection<T>::value_type value_type;
+  typedef typename ModelCollection<T>::allocator_type allocator_type;
+  typedef typename ModelCollection<T>::reference reference;
+  typedef typename ModelCollection<T>::const_reference const_reference;
+  typedef typename ModelCollection<T>::pointer pointer;
+  typedef typename ModelCollection<T>::const_pointer const_pointer;
+  typedef typename ModelCollection<T>::iterator iterator;
+  typedef typename ModelCollection<T>::const_iterator const_iterator;
+  typedef typename ModelCollection<T>::reverse_iterator reverse_iterator;
+  typedef typename ModelCollection<T>::const_reverse_iterator const_reverse_iterator;
+  typedef typename ModelCollection<T>::difference_type difference_type;
+  typedef typename ModelCollection<T>::size_type size_type;
 
-  void resize(size_type n, value_type val = value_type()) { is_dirty_ = true; Collection<T>::resize(n, val); }
-  template <class InputIterator> void assign(InputIterator first, InputIterator last) { is_dirty_ = true; Collection<T>::assign(first, last); }
-  void assign(size_type n, const value_type val) { is_dirty_ = true; Collection<T>::assign(n, val); }
-  void push_back(const value_type val) { is_dirty_ = true; Collection<T>::push_back(val); }
-  void pop_back() { is_dirty_ = true; Collection<T>::pop_back(); }
-  iterator insert(iterator position, const value_type val) { is_dirty_ = true; return Collection<T>::insert(position, val); }
-  void insert(iterator position, size_type n, const value_type val) { is_dirty_ = true; Collection<T>::insert(position, n, val); }
-  template <class InputIterator> void insert(iterator position, InputIterator first, InputIterator last) { is_dirty_ = true; Collection<T>::insert(position, first, last); }
-  iterator erase(iterator position) { is_dirty_ = true; return Collection<T>::erase(position); }
-  iterator erase(iterator first, iterator last) { is_dirty_ = true; return Collection<T>::erase(first, last); }
-  void swap(HasMany& x) { is_dirty_ = true; Collection<T>::swap(x); }
-  void clear() { is_dirty_ = true; Collection<T>::clear(); }
+  void resize(size_type n, value_type val = value_type()) { is_dirty_ = true; ModelCollection<T>::resize(n, val); }
+  template <class InputIterator> void assign(InputIterator first, InputIterator last) { is_dirty_ = true; ModelCollection<T>::assign(first, last); }
+  void assign(size_type n, const value_type val) { is_dirty_ = true; ModelCollection<T>::assign(n, val); }
+  void push_back(const value_type val) { is_dirty_ = true; ModelCollection<T>::push_back(val); }
+  void pop_back() { is_dirty_ = true; ModelCollection<T>::pop_back(); }
+  iterator insert(iterator position, const value_type val) { is_dirty_ = true; return ModelCollection<T>::insert(position, val); }
+  void insert(iterator position, size_type n, const value_type val) { is_dirty_ = true; ModelCollection<T>::insert(position, n, val); }
+  template <class InputIterator> void insert(iterator position, InputIterator first, InputIterator last) { is_dirty_ = true; ModelCollection<T>::insert(position, first, last); }
+  iterator erase(iterator position) { is_dirty_ = true; return ModelCollection<T>::erase(position); }
+  iterator erase(iterator first, iterator last) { is_dirty_ = true; return ModelCollection<T>::erase(first, last); }
+  void swap(HasMany& x) { is_dirty_ = true; ModelCollection<T>::swap(x); }
+  void clear() { is_dirty_ = true; ModelCollection<T>::clear(); }
 
 private:
   mutable bool is_dirty_;
@@ -238,5 +238,5 @@ private:
 
 }
 
-#endif // RELATION_H_20130318
+#endif // RESTFUL_MAPPER_RELATION_H
 

@@ -1,5 +1,5 @@
-#ifndef MAPPER_H_20130307
-#define MAPPER_H_20130307
+#ifndef RESTFUL_MAPPER_MAPPER_H
+#define RESTFUL_MAPPER_MAPPER_H
 
 #include <restful_mapper/field.h>
 #include <restful_mapper/relation.h>
@@ -97,5 +97,5 @@ private:
 
 }
 
-#endif // MAPPER_H_20130307
+#endif // RESTFUL_MAPPER_MAPPER_H
 

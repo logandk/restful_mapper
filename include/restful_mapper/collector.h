@@ -1,5 +1,5 @@
-#ifndef COLLECTOR_H_20130315
-#define COLLECTOR_H_20130315
+#ifndef RESTFUL_MAPPER_COLLECTOR_H
+#define RESTFUL_MAPPER_COLLECTOR_H
 
 #include <vector>
 #include <string>
@@ -27,5 +27,5 @@ private:
 
 }
 
-#endif // COLLECTOR_H_20130315
+#endif // RESTFUL_MAPPER_COLLECTOR_H
 
