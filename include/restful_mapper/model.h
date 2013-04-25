@@ -12,7 +12,7 @@ template <class T>
 class Model
 {
 public:
-  typedef std::vector<T> Collection;
+  typedef Collection<T> Collection;
 
   Model() : exists_(false) {}
 
@@ -31,14 +31,14 @@ public:
     throw std::logic_error(std::string("endpoint not implemented for ") + typeid(T).name());
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     throw std::logic_error(std::string("primary not implemented for ") + typeid(T).name());
   }
 
   void from_json(std::string values, const int &flags = 0)
   {
-    primary() = Primary(); // Reset primary
+    const_cast<Primary &>(primary()) = Primary(); // Reset primary
 
     Mapper mapper(values, flags);
     map_get(mapper);
@@ -75,7 +75,7 @@ public:
 
       // Reload all attributes
       from_json(to_json(FORCE_DIRTY), FORCE_DIRTY | IGNORE_MISSING);
-      primary().clear();
+      const_cast<Primary &>(primary()).clear();
 
       exists_ = false;
     }
@@ -93,10 +93,19 @@ public:
     }
   }
 
+  virtual T clone() const
+  {
+    T cloned;
+
+    cloned.from_json(to_json(NO_CLEAN | FORCE_DIRTY), FORCE_DIRTY | IGNORE_MISSING);
+
+    return cloned;
+  }
+
   static T find(const int &id)
   {
     T instance;
-    instance.primary().set(id, true);
+    const_cast<Primary &>(instance.primary()).set(id, true);
 
     instance.exists_ = true;
     instance.reload();
@@ -155,7 +164,7 @@ public:
     return objects;
   }
 
-  std::string url()
+  std::string url() const
   {
     if (exists())
     {

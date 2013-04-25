@@ -163,7 +163,7 @@ public:
     return "/todo";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -201,7 +201,7 @@ The interface specified the following methods, which must be overriden:
 * `virtual std::string restful_mapper::Model::endpoint() const`<br/>
   Specifies the API endpoint for this particular model. Relative to the web service
   root URL.
-* `virtual Primary &restful_mapper::Model::primary()`<br/>
+* `virtual const Primary &restful_mapper::Model::primary()` const<br/>
   Specifies the primary key of the model.
 
 ## Working with objects ##
@@ -226,6 +226,9 @@ t.reload();
 
 // Get all items in collection
 Todo::Collection todos = Todo::find_all();
+
+// Find an item in the collection by id
+todos.find(4);
 ```
 
 ### Saving data ###
@@ -243,6 +246,10 @@ old_todo.save();
 
 // Deleting an item
 old_todo.destroy();
+
+// Create a clone with no id set (i.e. a new database object)
+Todo todo_clone = old_todo.clone();
+todo_clone.save();
 ```
 
 ### Relationships ###

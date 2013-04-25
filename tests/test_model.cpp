@@ -45,7 +45,7 @@ public:
     return "/todo";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -82,7 +82,7 @@ public:
     return "/country";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -123,7 +123,7 @@ public:
     return "/city";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -158,7 +158,7 @@ public:
     return "/zipcode";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -199,7 +199,7 @@ public:
     return "/citizen";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -234,7 +234,7 @@ public:
     return "/phone_number";
   }
 
-  virtual Primary &primary()
+  virtual const Primary &primary() const
   {
     return id;
   }
@@ -316,6 +316,47 @@ TEST_F(ModelTest, UpdateItem)
 
   Todo t3 = Todo::find(2);
   ASSERT_EQ(int(now), int(t2.completed_on));
+
+  t = Todo::find(2);
+
+  t.task = "Do something else...";
+
+  Todo t4(t);
+
+  ASSERT_TRUE(t4.task.is_dirty());
+
+  t4.save();
+
+  ASSERT_FALSE(t4.id.is_dirty());
+  ASSERT_FALSE(t4.task.is_dirty());
+  ASSERT_FALSE(t4.priority.is_dirty());
+  ASSERT_FALSE(t4.time.is_dirty());
+  ASSERT_FALSE(t4.completed.is_dirty());
+}
+
+TEST_F(ModelTest, CloneItem)
+{
+  Todo t = Todo::find(2);
+
+  Todo t2(t);
+
+  ASSERT_EQ(2, int(t2.id));
+  ASSERT_STREQ("???", string(t2.task).c_str());
+
+  Todo t3 = t.clone();
+
+  ASSERT_TRUE(t3.id.is_null());
+  ASSERT_STREQ("???", string(t3.task).c_str());
+  ASSERT_EQ(2, int(t3.priority));
+  ASSERT_DOUBLE_EQ(4.54, double(t3.time));
+  ASSERT_FALSE(bool(t3.completed));
+  ASSERT_EQ(2013, t3.completed_on.utc_year());
+  ASSERT_EQ(3, t3.completed_on.utc_month());
+  ASSERT_EQ(13, t3.completed_on.utc_day());
+  ASSERT_EQ(11, t3.completed_on.utc_hour());
+  ASSERT_EQ(53, t3.completed_on.utc_minute());
+  ASSERT_EQ(21, t3.completed_on.utc_second());
+  ASSERT_STREQ("2013-03-13T11:53:21Z", string(t3.completed_on).c_str());
 }
 
 TEST_F(ModelTest, DeleteItem)
@@ -365,6 +406,24 @@ TEST_F(ModelTest, GetCollection)
   ASSERT_STREQ("Build an API", string(todos[0].task).c_str());
   ASSERT_STREQ("???", string(todos[1].task).c_str());
   ASSERT_STREQ("Profit!!!", string(todos[2].task).c_str());
+}
+
+TEST_F(ModelTest, CollectionFind)
+{
+  Todo::Collection todos = Todo::find_all();
+  ASSERT_EQ(3, todos.size());
+
+  Todo t = todos.find(2);
+  ASSERT_STREQ("???", t.task.get().c_str());
+
+  t = todos.find(3);
+  ASSERT_STREQ("Profit!!!", t.task.get().c_str());
+
+  todos.find(3).task = "What?";
+  t = todos.find(3);
+  ASSERT_STREQ("What?", t.task.get().c_str());
+
+  ASSERT_THROW(todos.find(4), out_of_range);
 }
 
 TEST_F(ModelTest, GetHasOne)
