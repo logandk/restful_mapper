@@ -22,6 +22,8 @@ TEST(FieldTest, IntField)
   ASSERT_FALSE(f.is_null());
   ASSERT_TRUE(f.is_dirty());
   ASSERT_EQ(5, int(f));
+  ASSERT_TRUE(f == 5);
+  ASSERT_FALSE(f == 3);
 }
 
 TEST(FieldTest, DoubleField)
@@ -40,10 +42,12 @@ TEST(FieldTest, BoolField)
   f = true;
 
   ASSERT_TRUE(bool(f));
+  ASSERT_TRUE(f);
 
   f.clear();
 
   ASSERT_FALSE(bool(f));
+  ASSERT_FALSE(f);
 }
 
 TEST(FieldTest, StringField)
@@ -80,6 +84,11 @@ TEST(FieldTest, StringField)
 
   ASSERT_STREQ("Something else...", s2.c_str());
   ASSERT_STREQ("Something else...", f.c_str());
+
+  ASSERT_TRUE(f == string("Something else..."));
+  ASSERT_TRUE(f == "Something else...");
+  ASSERT_FALSE(f != "Something else...");
+  ASSERT_FALSE(f == "Something...");
 }
 
 TEST(FieldTest, TimeField)
