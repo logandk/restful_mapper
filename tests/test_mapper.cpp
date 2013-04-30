@@ -67,7 +67,7 @@ TEST(MapperTest, ParseJson)
   ASSERT_FALSE(f_bool);
 
   m.get("task", f_string);
-  ASSERT_STREQ("Profit!!!", f_string.get().c_str());
+  ASSERT_STREQ("Profit!!!", f_string.c_str());
 
   m.get("completed_on", f_time);
   ASSERT_EQ(2013, f_time.local_year());

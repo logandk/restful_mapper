@@ -101,6 +101,11 @@ public:
     set("", keep_clean);
     is_null_ = true;
   }
+
+  const char *c_str() const
+  {
+    return get().c_str();
+  }
 };
 
 template <>

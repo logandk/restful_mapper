@@ -414,14 +414,14 @@ TEST_F(ModelTest, CollectionFind)
   ASSERT_EQ(3, todos.size());
 
   Todo t = todos.find(2);
-  ASSERT_STREQ("???", t.task.get().c_str());
+  ASSERT_STREQ("???", t.task.c_str());
 
   t = todos.find(3);
-  ASSERT_STREQ("Profit!!!", t.task.get().c_str());
+  ASSERT_STREQ("Profit!!!", t.task.c_str());
 
   todos.find(3).task = "What?";
   t = todos.find(3);
-  ASSERT_STREQ("What?", t.task.get().c_str());
+  ASSERT_STREQ("What?", t.task.c_str());
 
   ASSERT_THROW(todos.find(4), out_of_range);
 }
@@ -432,7 +432,7 @@ TEST_F(ModelTest, GetHasOne)
 
   ASSERT_EQ(2, c.zipcode->city_id.get());
   ASSERT_EQ(2, c.zipcode->id.get());
-  ASSERT_STREQ("8000", c.zipcode->code.get().c_str());
+  ASSERT_STREQ("8000", c.zipcode->code.c_str());
 
   City c2 = City::find(3);
   ASSERT_TRUE(c2.zipcode.is_null());
@@ -451,7 +451,7 @@ TEST_F(ModelTest, SaveHasOne)
   c.save();
 
   City c2 = City::find(2);
-  ASSERT_STREQ("3453", c.zipcode->code.get().c_str());
+  ASSERT_STREQ("3453", c.zipcode->code.c_str());
 }
 
 TEST_F(ModelTest, GetHasMany)
@@ -460,17 +460,17 @@ TEST_F(ModelTest, GetHasMany)
 
   ASSERT_FALSE(c.citizens.empty());
   ASSERT_EQ(2, c.citizens.size());
-  ASSERT_STREQ("Jane", c.citizens[1].first_name.get().c_str());
+  ASSERT_STREQ("Jane", c.citizens[1].first_name.c_str());
   ASSERT_EQ(1, c.citizens[0].city_id.get());
   ASSERT_EQ(1, c.citizens[0].id.get());
   ASSERT_TRUE(c.citizens[1].exists());
 
   PhoneNumber ph = PhoneNumber::find(2);
   ASSERT_EQ(5678, ph.number.get());
-  ASSERT_STREQ("John", ph.citizen->first_name.get().c_str());
+  ASSERT_STREQ("John", ph.citizen->first_name.c_str());
 
   Country ct = Country::find(3);
-  ASSERT_STREQ("Norway", ct.name.get().c_str());
+  ASSERT_STREQ("Norway", ct.name.c_str());
   ASSERT_TRUE(ct.cities.empty());
 }
 
@@ -483,7 +483,7 @@ TEST_F(ModelTest, SaveHasMany)
 
   Country c2 = Country::find(1);
 
-  ASSERT_STREQ("Gothenburg", c2.cities[0].name.get().c_str());
+  ASSERT_STREQ("Gothenburg", c2.cities[0].name.c_str());
 
   ASSERT_TRUE(c.id.get() == c2.id.get());
   ASSERT_TRUE(c.name.get() == c2.name.get());
@@ -496,7 +496,7 @@ TEST_F(ModelTest, QuerySingle)
 
   Todo todo = Todo::find(q);
 
-  ASSERT_STREQ("???", todo.task.get().c_str());
+  ASSERT_STREQ("???", todo.task.c_str());
 
   q.clear();
   q("time").gt("1.45");
@@ -520,8 +520,8 @@ TEST_F(ModelTest, QueryMany)
   Todo::Collection todos = Todo::find_all(q);
 
   ASSERT_EQ(2, todos.size());
-  ASSERT_STREQ("???", todos[0].task.get().c_str());
-  ASSERT_STREQ("Build an API", todos[1].task.get().c_str());
+  ASSERT_STREQ("???", todos[0].task.c_str());
+  ASSERT_STREQ("Build an API", todos[1].task.c_str());
 
   q.clear();
   q("time").gt("100000");

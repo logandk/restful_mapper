@@ -79,6 +79,7 @@ TEST(FieldTest, StringField)
   string s2 = f;
 
   ASSERT_STREQ("Something else...", s2.c_str());
+  ASSERT_STREQ("Something else...", f.c_str());
 }
 
 TEST(FieldTest, TimeField)
