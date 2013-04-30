@@ -400,12 +400,17 @@ TEST_F(ModelTest, DeleteItem)
 TEST_F(ModelTest, GetCollection)
 {
   Todo::Collection todos = Todo::find_all();
+  Todo::Collection todos_copy;
 
   ASSERT_EQ(3, todos.size());
 
   ASSERT_STREQ("Build an API", string(todos[0].task).c_str());
   ASSERT_STREQ("???", string(todos[1].task).c_str());
   ASSERT_STREQ("Profit!!!", string(todos[2].task).c_str());
+
+  todos_copy = todos;
+
+  ASSERT_EQ(3, todos_copy.size());
 }
 
 TEST_F(ModelTest, CollectionFind)

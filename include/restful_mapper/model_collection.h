@@ -14,8 +14,6 @@ class ModelCollection
 {
 public:
   ModelCollection() {}
-  ModelCollection(const ModelCollection &other) : items_(other.items_) {}
-  ModelCollection &operator=(ModelCollection other) { std::swap(*this, other); return *this; }
   virtual ~ModelCollection() {}
 
   const std::vector<T> &items() const
