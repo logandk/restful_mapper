@@ -33,6 +33,12 @@ TEST(FieldTest, DoubleField)
   f = 5.45;
 
   ASSERT_FLOAT_EQ(5.45, float(f));
+
+  Field<double> f2;
+
+  f2 = 5.45;
+
+  ASSERT_TRUE(f == f2);
 }
 
 TEST(FieldTest, BoolField)
@@ -90,6 +96,11 @@ TEST(FieldTest, StringField)
   ASSERT_FALSE(f != "Something else...");
   ASSERT_FALSE(f == "Something...");
   ASSERT_TRUE(s2 == f);
+
+  Field<string> f2;
+  f2 = "Something else...";
+
+  ASSERT_TRUE(f2 == f);
 }
 
 TEST(FieldTest, TimeField)
