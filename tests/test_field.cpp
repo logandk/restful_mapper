@@ -89,6 +89,7 @@ TEST(FieldTest, StringField)
   ASSERT_TRUE(f == "Something else...");
   ASSERT_FALSE(f != "Something else...");
   ASSERT_FALSE(f == "Something...");
+  ASSERT_TRUE(s2 == f);
 }
 
 TEST(FieldTest, TimeField)

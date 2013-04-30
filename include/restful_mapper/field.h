@@ -106,44 +106,21 @@ public:
   {
     return get().c_str();
   }
-
-  friend bool operator== (const Field<std::string> &lhs, const std::string& rhs);
-  friend bool operator!= (const Field<std::string> &lhs, const std::string& rhs);
-  friend bool operator< (const Field<std::string> &lhs, const std::string& rhs);
-  friend bool operator<= (const Field<std::string> &lhs, const std::string& rhs);
-  friend bool operator> (const Field<std::string> &lhs, const std::string& rhs);
-  friend bool operator>= (const Field<std::string> &lhs, const std::string& rhs);
 };
 
-inline bool operator== (const Field<std::string> &lhs, const std::string& rhs)
-{
-  return lhs.get() == rhs;
-}
+inline bool operator== (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() == rhs; }
+inline bool operator!= (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() != rhs; }
+inline bool operator<  (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() <  rhs; }
+inline bool operator<= (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() <= rhs; }
+inline bool operator>  (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() >  rhs; }
+inline bool operator>= (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() >= rhs; }
 
-inline bool operator!= (const Field<std::string> &lhs, const std::string& rhs)
-{
-  return lhs.get() != rhs;
-}
-
-inline bool operator< (const Field<std::string> &lhs, const std::string& rhs)
-{
-  return lhs.get() < rhs;
-}
-
-inline bool operator<= (const Field<std::string> &lhs, const std::string& rhs)
-{
-  return lhs.get() <= rhs;
-}
-
-inline bool operator> (const Field<std::string> &lhs, const std::string& rhs)
-{
-  return lhs.get() > rhs;
-}
-
-inline bool operator>= (const Field<std::string> &lhs, const std::string& rhs)
-{
-  return lhs.get() >= rhs;
-}
+inline bool operator== (const std::string &lhs, const Field<std::string> &rhs) { return lhs == rhs.get(); }
+inline bool operator!= (const std::string &lhs, const Field<std::string> &rhs) { return lhs != rhs.get(); }
+inline bool operator<  (const std::string &lhs, const Field<std::string> &rhs) { return lhs <  rhs.get(); }
+inline bool operator<= (const std::string &lhs, const Field<std::string> &rhs) { return lhs <= rhs.get(); }
+inline bool operator>  (const std::string &lhs, const Field<std::string> &rhs) { return lhs >  rhs.get(); }
+inline bool operator>= (const std::string &lhs, const Field<std::string> &rhs) { return lhs >= rhs.get(); }
 
 template <>
 class Field<std::time_t> : public FieldBase<std::time_t>
