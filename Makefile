@@ -4,7 +4,8 @@ all:
 	cd build; cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=$(CURDIR) ..; make all install
 
 test: all
-	cd tests/build; cmake ${CMAKE_ARGS} ..; make; ./tests
+	cd tests/build; cmake ${CMAKE_ARGS} ..; make
+	./tests/build/tests
 
 vendor:
 	cd vendor; cmake ${CMAKE_ARGS} .; make

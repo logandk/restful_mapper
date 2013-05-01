@@ -88,6 +88,8 @@ TEST(FieldTest, StringField)
 
   string s2 = f;
 
+  ASSERT_EQ(s2.size(), f.size());
+
   ASSERT_STREQ("Something else...", s2.c_str());
   ASSERT_STREQ("Something else...", f.c_str());
 
@@ -101,6 +103,10 @@ TEST(FieldTest, StringField)
   f2 = "Something else...";
 
   ASSERT_TRUE(f2 == f);
+
+  string s3 = f + f2;
+
+  ASSERT_STREQ("Something else...Something else...", s3.c_str());
 }
 
 TEST(FieldTest, TimeField)
@@ -321,5 +327,21 @@ TEST(FieldTest, DirtyFlag)
 
   ASSERT_TRUE(f6.is_null());
   ASSERT_TRUE(f6.is_dirty());
+}
+
+TEST(FieldTest, Stream)
+{
+  Field<string> f1;
+  f1 = "flaf";
+
+  Field<double> f2;
+  f2 = 3.1;
+
+  ostringstream s;
+
+  s << f1;
+  s << f2;
+
+  ASSERT_STREQ("flaf3.1", s.str().c_str());
 }
 

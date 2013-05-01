@@ -78,6 +78,12 @@ protected:
 };
 
 template <class T>
+std::ostream &operator<<(std::ostream &out, const FieldBase<T> &field)
+{
+  return out << field.get();
+}
+
+template <class T>
 class Field : public FieldBase<T>
 {
 public:
@@ -102,32 +108,142 @@ public:
     is_null_ = true;
   }
 
-  const char *c_str() const
-  {
-    return get().c_str();
-  }
+  // Reimplement std::string
+  typedef std::string::value_type             value_type;
+  typedef std::string::traits_type            traits_type;
+  typedef std::string::allocator_type         allocator_type;
+  typedef std::string::reference              reference;
+  typedef std::string::const_reference        const_reference;
+  typedef std::string::pointer                pointer;
+  typedef std::string::const_pointer          const_pointer;
+  typedef std::string::iterator               iterator;
+  typedef std::string::const_iterator         const_iterator;
+  typedef std::string::reverse_iterator       reverse_iterator;
+  typedef std::string::const_reverse_iterator const_reverse_iterator;
+  typedef std::string::difference_type        difference_type;
+  typedef std::string::size_type              size_type;
+
+  iterator begin() { return value_.begin(); }
+  const_iterator begin() const { return value_.begin(); }
+  iterator end() { return value_.end(); }
+  const_iterator end() const { return value_.end(); }
+  reverse_iterator rbegin() { return value_.rbegin(); }
+  const_reverse_iterator rbegin() const { return value_.rbegin(); }
+  reverse_iterator rend() { return value_.rend(); }
+  const_reverse_iterator rend() const { return value_.rend(); }
+  size_t size() const { return value_.size(); }
+  size_t length() const { return value_.length(); }
+  size_t max_size() const { return value_.max_size(); }
+  void resize(size_t n) { touch(); value_.resize(n); }
+  void resize(size_t n, char c) { touch(); value_.resize(n, c); }
+  size_t capacity() const { return value_.capacity(); }
+  void reserve(size_t n = 0) { touch(); value_.reserve(n); }
+  bool empty() const { return value_.empty(); }
+  char &operator[](size_t pos) { return value_[pos]; }
+  const char &operator[](size_t pos) const { return value_[pos]; }
+  char &at(size_t pos) { return value_.at(pos); }
+  const char &at(size_t pos) const { return value_.at(pos); }
+  Field<std::string> &operator+=(const std::string &str) { touch(); value_ += str; return *this; }
+  Field<std::string> &operator+=(const char* s) { touch(); value_ += s; return *this; }
+  Field<std::string> &operator+=(char c) { touch(); value_ += c; return *this; }
+  Field<std::string> &append(const std::string &str) { touch(); value_.append(str); return *this; }
+  Field<std::string> &append(const std::string &str, size_t subpos, size_t sublen) { touch(); value_.append(str, subpos, sublen); return *this; }
+  Field<std::string> &append(const char* s) { touch(); value_.append(s); return *this; }
+  Field<std::string> &append(const char* s, size_t n) { touch(); value_.append(s, n); return *this; }
+  Field<std::string> &append(size_t n, char c) { touch(); value_.append(n, c); return *this; }
+  template <class InputIterator> std::string &append(InputIterator first, InputIterator last) { value_.append(first, last); return *this; }
+  void push_back(char c) { touch(); value_.push_back(c); }
+  Field<std::string> &assign(const std::string &str) { touch(); value_.assign(str); return *this; }
+  Field<std::string> &assign(const std::string &str, size_t subpos, size_t sublen) { touch(); value_.assign(str, subpos, sublen); return *this; }
+  Field<std::string> &assign(const char* s) { touch(); value_.assign(s); return *this; }
+  Field<std::string> &assign(const char* s, size_t n) { touch(); value_.assign(s, n); return *this; }
+  Field<std::string> &assign(size_t n, char c) { touch(); value_.assign(n, c); return *this; }
+  template <class InputIterator> std::string &assign(InputIterator first, InputIterator last) { value_.assign(first, last); return *this; }
+  Field<std::string> &insert(size_t pos, const std::string &str) { touch(); value_.insert(pos, str); return *this; }
+  Field<std::string> &insert(size_t pos, const std::string &str, size_t subpos, size_t sublen) { touch(); value_.insert(pos, str, subpos, sublen); return *this; }
+  Field<std::string> &insert(size_t pos, const char* s) { touch(); value_.insert(pos, s); return *this; }
+  Field<std::string> &insert(size_t pos, const char* s, size_t n) { touch(); value_.insert(pos, s, n); return *this; }
+  Field<std::string> &insert(size_t pos, size_t n, char c) { touch(); value_.insert(pos, n, c); return *this; }
+  void insert(iterator p, size_t n, char c) { touch(); value_.insert(p, n, c); }
+  iterator insert(iterator p, char c) { touch(); return value_.insert(p, c); }
+  template <class InputIterator> void insert(iterator p, InputIterator first, InputIterator last) { return value_.insert(first, last); }
+  Field<std::string> &erase(size_t pos = 0, size_t len = npos) { touch(); value_.erase(pos, len); return *this; }
+  iterator erase(iterator p) { touch(); return value_.erase(p); }
+  iterator erase(iterator first, iterator last) { touch(); return value_.erase(first, last); }
+  Field<std::string> &replace(size_t pos,  size_t len,  const std::string &str) { touch(); value_.replace(pos, len, str); return *this; }
+  Field<std::string> &replace(iterator i1, iterator i2, const std::string &str) { touch(); value_.replace(i1, i2, str); return *this; }
+  Field<std::string> &replace(size_t pos,  size_t len,  const std::string &str, size_t subpos, size_t sublen) { touch(); value_.replace(pos, len, str, subpos, sublen); return *this; }
+  Field<std::string> &replace(size_t pos,  size_t len,  const char* s) { touch(); value_.replace(pos, len, s); return *this; }
+  Field<std::string> &replace(iterator i1, iterator i2, const char* s) { touch(); value_.replace(i1, i2, s); return *this; }
+  Field<std::string> &replace(size_t pos,  size_t len,  const char* s, size_t n) { touch(); value_.replace(pos, len, s, n); return *this; }
+  Field<std::string> &replace(iterator i1, iterator i2, const char* s, size_t n) { touch(); value_.replace(i1, i2, s, n); return *this; }
+  Field<std::string> &replace(size_t pos,  size_t len,  size_t n, char c) { touch(); value_.replace(pos, len, n, c); return *this; }
+  Field<std::string> &replace(iterator i1, iterator i2, size_t n, char c) { touch(); value_.replace(i1, i2, n, c); return *this; }
+  template <class InputIterator> std::string &replace(iterator i1, iterator i2, InputIterator first, InputIterator last) { value_.replace(i1, i2, first, last); return *this; }
+  void swap(std::string &str) { touch(); value_.swap(str); }
+  const char* c_str() const { return value_.c_str(); }
+  const char* data() const { return value_.data(); }
+  allocator_type get_allocator() const { return value_.get_allocator(); }
+  size_t copy(char* s, size_t n, size_t pos = 0) const { return value_.copy(s, n, pos); }
+  size_t find(const std::string &str, size_t pos = 0) const { return value_.find(str, pos); }
+  size_t find(const char* s, size_t pos = 0) const { return value_.find(s, pos); }
+  size_t find(const char* s, size_t pos, size_t n) const { return value_.find(s, pos, n); }
+  size_t find(char c, size_t pos = 0) const { return value_.find(c, pos); }
+  size_t rfind(const std::string &str, size_t pos = npos) const { return value_.rfind(str, pos); }
+  size_t rfind(const char* s, size_t pos = npos) const { return value_.rfind(s, pos); }
+  size_t rfind(const char* s, size_t pos, size_t n) const { return value_.rfind(s, pos, n); }
+  size_t rfind(char c, size_t pos = npos) const { return value_.rfind(c, pos); }
+  size_t find_first_of(const std::string &str, size_t pos = 0) const { return value_.find_first_of(str, pos); }
+  size_t find_first_of(const char* s, size_t pos = 0) const { return value_.find_first_of(s, pos); }
+  size_t find_first_of(const char* s, size_t pos, size_t n) const { return value_.find_first_of(s, pos, n); }
+  size_t find_first_of(char c, size_t pos = 0) const { return value_.find_first_of(c, pos); }
+  size_t find_last_of(const std::string &str, size_t pos = npos) const { return value_.find_last_of(str, pos); }
+  size_t find_last_of(const char* s, size_t pos = npos) const { return value_.find_last_of(s, pos); }
+  size_t find_last_of(const char* s, size_t pos, size_t n) const { return value_.find_last_of(s, pos, n); }
+  size_t find_last_of(char c, size_t pos = npos) const { return value_.find_last_of(c, pos); }
+  size_t find_first_not_of(const std::string &str, size_t pos = 0) const { return value_.find_first_not_of(str, pos); }
+  size_t find_first_not_of(const char* s, size_t pos = 0) const { return value_.find_first_not_of(s, pos); }
+  size_t find_first_not_of(const char* s, size_t pos, size_t n) const { return value_.find_first_not_of(s, pos, n); }
+  size_t find_first_not_of(char c, size_t pos = 0) const { return value_.find_first_not_of(c, pos); }
+  size_t find_last_not_of(const std::string &str, size_t pos = npos) const { return value_.find_last_not_of(str, pos); }
+  size_t find_last_not_of(const char* s, size_t pos = npos) const { return value_.find_last_not_of(s, pos); }
+  size_t find_last_not_of(const char* s, size_t pos, size_t n) const { return value_.find_last_not_of(s, pos, n); }
+  size_t find_last_not_of(char c, size_t pos = npos) const { return value_.find_last_not_of(c, pos); }
+  std::string substr(size_t pos = 0, size_t len = npos) const { return value_.substr(pos, len); }
+  int compare(const std::string &str) const { return value_.compare(str); }
+  int compare(size_t pos, size_t len, const std::string &str) const { return value_.compare(pos, len, str); }
+  int compare(size_t pos, size_t len, const std::string &str, size_t subpos, size_t sublen) const { return value_.compare(pos, len, str, subpos, sublen); }
+  int compare(const char* s) const { return value_.compare(s); }
+  int compare(size_t pos, size_t len, const char* s) const { return value_.compare(pos, len, s); }
+  int compare(size_t pos, size_t len, const char* s, size_t n) const { return value_.compare(pos, len, s, n); }
+
+  static const size_t npos = -1;
 };
 
-inline bool operator== (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() == rhs.get(); }
-inline bool operator!= (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() != rhs.get(); }
-inline bool operator<  (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() <  rhs.get(); }
-inline bool operator<= (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() <= rhs.get(); }
-inline bool operator>  (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() >  rhs.get(); }
-inline bool operator>= (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() >= rhs.get(); }
+inline std::string operator+(const std::string &lhs, const Field<std::string> &rhs) { return lhs + rhs.get(); }
+inline std::string operator+(const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() + rhs.get(); }
+inline std::string operator+(const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() + rhs; }
 
-inline bool operator== (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() == rhs; }
-inline bool operator!= (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() != rhs; }
-inline bool operator<  (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() <  rhs; }
-inline bool operator<= (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() <= rhs; }
-inline bool operator>  (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() >  rhs; }
-inline bool operator>= (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() >= rhs; }
+inline bool operator==(const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() == rhs.get(); }
+inline bool operator!=(const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() != rhs.get(); }
+inline bool operator< (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() <  rhs.get(); }
+inline bool operator<=(const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() <= rhs.get(); }
+inline bool operator> (const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() >  rhs.get(); }
+inline bool operator>=(const Field<std::string> &lhs, const Field<std::string> &rhs) { return lhs.get() >= rhs.get(); }
 
-inline bool operator== (const std::string &lhs, const Field<std::string> &rhs) { return lhs == rhs.get(); }
-inline bool operator!= (const std::string &lhs, const Field<std::string> &rhs) { return lhs != rhs.get(); }
-inline bool operator<  (const std::string &lhs, const Field<std::string> &rhs) { return lhs <  rhs.get(); }
-inline bool operator<= (const std::string &lhs, const Field<std::string> &rhs) { return lhs <= rhs.get(); }
-inline bool operator>  (const std::string &lhs, const Field<std::string> &rhs) { return lhs >  rhs.get(); }
-inline bool operator>= (const std::string &lhs, const Field<std::string> &rhs) { return lhs >= rhs.get(); }
+inline bool operator==(const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() == rhs; }
+inline bool operator!=(const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() != rhs; }
+inline bool operator< (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() <  rhs; }
+inline bool operator<=(const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() <= rhs; }
+inline bool operator> (const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() >  rhs; }
+inline bool operator>=(const Field<std::string> &lhs, const std::string &rhs) { return lhs.get() >= rhs; }
+
+inline bool operator==(const std::string &lhs, const Field<std::string> &rhs) { return lhs == rhs.get(); }
+inline bool operator!=(const std::string &lhs, const Field<std::string> &rhs) { return lhs != rhs.get(); }
+inline bool operator< (const std::string &lhs, const Field<std::string> &rhs) { return lhs <  rhs.get(); }
+inline bool operator<=(const std::string &lhs, const Field<std::string> &rhs) { return lhs <= rhs.get(); }
+inline bool operator> (const std::string &lhs, const Field<std::string> &rhs) { return lhs >  rhs.get(); }
+inline bool operator>=(const std::string &lhs, const Field<std::string> &rhs) { return lhs >= rhs.get(); }
 
 template <>
 class Field<std::time_t> : public FieldBase<std::time_t>
