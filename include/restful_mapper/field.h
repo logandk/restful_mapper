@@ -151,14 +151,14 @@ public:
   Field<std::string> &append(const char* s) { touch(); value_.append(s); return *this; }
   Field<std::string> &append(const char* s, size_t n) { touch(); value_.append(s, n); return *this; }
   Field<std::string> &append(size_t n, char c) { touch(); value_.append(n, c); return *this; }
-  template <class InputIterator> std::string &append(InputIterator first, InputIterator last) { value_.append(first, last); return *this; }
+  template <class InputIterator> Field<std::string> &append(InputIterator first, InputIterator last) { value_.append(first, last); return *this; }
   void push_back(char c) { touch(); value_.push_back(c); }
   Field<std::string> &assign(const std::string &str) { touch(); value_.assign(str); return *this; }
   Field<std::string> &assign(const std::string &str, size_t subpos, size_t sublen) { touch(); value_.assign(str, subpos, sublen); return *this; }
   Field<std::string> &assign(const char* s) { touch(); value_.assign(s); return *this; }
   Field<std::string> &assign(const char* s, size_t n) { touch(); value_.assign(s, n); return *this; }
   Field<std::string> &assign(size_t n, char c) { touch(); value_.assign(n, c); return *this; }
-  template <class InputIterator> std::string &assign(InputIterator first, InputIterator last) { value_.assign(first, last); return *this; }
+  template <class InputIterator> Field<std::string> &assign(InputIterator first, InputIterator last) { value_.assign(first, last); return *this; }
   Field<std::string> &insert(size_t pos, const std::string &str) { touch(); value_.insert(pos, str); return *this; }
   Field<std::string> &insert(size_t pos, const std::string &str, size_t subpos, size_t sublen) { touch(); value_.insert(pos, str, subpos, sublen); return *this; }
   Field<std::string> &insert(size_t pos, const char* s) { touch(); value_.insert(pos, s); return *this; }
@@ -179,7 +179,7 @@ public:
   Field<std::string> &replace(iterator i1, iterator i2, const char* s, size_t n) { touch(); value_.replace(i1, i2, s, n); return *this; }
   Field<std::string> &replace(size_t pos,  size_t len,  size_t n, char c) { touch(); value_.replace(pos, len, n, c); return *this; }
   Field<std::string> &replace(iterator i1, iterator i2, size_t n, char c) { touch(); value_.replace(i1, i2, n, c); return *this; }
-  template <class InputIterator> std::string &replace(iterator i1, iterator i2, InputIterator first, InputIterator last) { value_.replace(i1, i2, first, last); return *this; }
+  template <class InputIterator> Field<std::string> &replace(iterator i1, iterator i2, InputIterator first, InputIterator last) { value_.replace(i1, i2, first, last); return *this; }
   void swap(std::string &str) { touch(); value_.swap(str); }
   const char* c_str() const { return value_.c_str(); }
   const char* data() const { return value_.data(); }
