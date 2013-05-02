@@ -1,5 +1,5 @@
 #include <restful_mapper/mapper.h>
-#include <restful_mapper/internal/json.h>
+#include <restful_mapper/internal/yajl_helpers.h>
 
 using namespace std;
 using namespace restful_mapper;
@@ -16,7 +16,10 @@ Mapper::Mapper(const int &flags)
   json_gen_ptr_ = static_cast<void *>(yajl_gen_alloc(NULL));
   yajl_gen_config(JSON_GEN_HANDLE, yajl_gen_validate_utf8, 1);
 
-  yajl_gen_error(yajl_gen_map_open(JSON_GEN_HANDLE));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_map_open(JSON_GEN_HANDLE));
+  }
 
   json_tree_ptr_ = NULL;
 }
@@ -29,7 +32,10 @@ Mapper::Mapper(string json_struct, const int &flags)
   json_gen_ptr_ = static_cast<void *>(yajl_gen_alloc(NULL));
   yajl_gen_config(JSON_GEN_HANDLE, yajl_gen_validate_utf8, 1);
 
-  yajl_gen_error(yajl_gen_map_open(JSON_GEN_HANDLE));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_map_open(JSON_GEN_HANDLE));
+  }
 
   char errors[1024];
   json_tree_ptr_ = static_cast<void *>(yajl_tree_parse(json_struct.c_str(), errors, sizeof(errors)));
@@ -56,7 +62,10 @@ Mapper::~Mapper()
 
 string Mapper::dump() const
 {
-  yajl_gen_error(yajl_gen_map_close(JSON_GEN_HANDLE));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_map_close(JSON_GEN_HANDLE));
+  }
 
   return yajl_gen_dump(JSON_GEN_HANDLE);
 }
@@ -91,7 +100,13 @@ string Mapper::get(const char *key) const
 
 void Mapper::set(const char *key, string json_struct)
 {
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (should_output_single_field() && field_filter_ != key) return;
+
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
+
   yajl_gen_json(JSON_GEN_HANDLE, json_struct.c_str());
 }
 
@@ -102,9 +117,13 @@ void Mapper::get(const char *key, Field<int> &attr) const
 
 void Mapper::set(const char *key, const Field<int> &attr)
 {
-  if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+  if (should_output_single_field() && field_filter_ != key) return;
+  if (should_check_dirty() && !attr.is_dirty()) return;
 
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
 
   if (attr.is_null())
   {
@@ -115,7 +134,7 @@ void Mapper::set(const char *key, const Field<int> &attr)
     yajl_gen_error(yajl_gen_integer(JSON_GEN_HANDLE, attr));
   }
 
-  if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+  if (should_clean()) attr.clean();
 }
 
 void Mapper::get(const char *key, Field<double> &attr) const
@@ -125,9 +144,13 @@ void Mapper::get(const char *key, Field<double> &attr) const
 
 void Mapper::set(const char *key, const Field<double> &attr)
 {
-  if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+  if (should_output_single_field() && field_filter_ != key) return;
+  if (should_check_dirty() && !attr.is_dirty()) return;
 
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
 
   if (attr.is_null())
   {
@@ -138,7 +161,7 @@ void Mapper::set(const char *key, const Field<double> &attr)
     yajl_gen_error(yajl_gen_double(JSON_GEN_HANDLE, attr));
   }
 
-  if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+  if (should_clean()) attr.clean();
 }
 
 void Mapper::get(const char *key, Field<bool> &attr) const
@@ -148,9 +171,13 @@ void Mapper::get(const char *key, Field<bool> &attr) const
 
 void Mapper::set(const char *key, const Field<bool> &attr)
 {
-  if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+  if (should_output_single_field() && field_filter_ != key) return;
+  if (should_check_dirty() && !attr.is_dirty()) return;
 
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
 
   if (attr.is_null())
   {
@@ -161,7 +188,7 @@ void Mapper::set(const char *key, const Field<bool> &attr)
     yajl_gen_error(yajl_gen_bool(JSON_GEN_HANDLE, attr));
   }
 
-  if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+  if (should_clean()) attr.clean();
 }
 
 void Mapper::get(const char *key, Field<string> &attr) const
@@ -171,9 +198,13 @@ void Mapper::get(const char *key, Field<string> &attr) const
 
 void Mapper::set(const char *key, const Field<string> &attr)
 {
-  if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+  if (should_output_single_field() && field_filter_ != key) return;
+  if (should_check_dirty() && !attr.is_dirty()) return;
 
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
 
   if (attr.is_null())
   {
@@ -185,7 +216,7 @@ void Mapper::set(const char *key, const Field<string> &attr)
     yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(value.c_str()), value.size()));
   }
 
-  if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+  if (should_clean()) attr.clean();
 }
 
 void Mapper::get(const char *key, Field<time_t> &attr) const
@@ -195,9 +226,13 @@ void Mapper::get(const char *key, Field<time_t> &attr) const
 
 void Mapper::set(const char *key, const Field<time_t> &attr)
 {
-  if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+  if (should_output_single_field() && field_filter_ != key) return;
+  if (should_check_dirty() && !attr.is_dirty()) return;
 
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
 
   if (attr.is_null())
   {
@@ -209,7 +244,7 @@ void Mapper::set(const char *key, const Field<time_t> &attr)
     yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(value.c_str()), value.size()));
   }
 
-  if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+  if (should_clean()) attr.clean();
 }
 
 void Mapper::get(const char *key, Primary &attr) const
@@ -219,11 +254,16 @@ void Mapper::get(const char *key, Primary &attr) const
 
 void Mapper::set(const char *key, const Primary &attr)
 {
+  if (should_output_single_field() && field_filter_ != key) return;
   if ((flags_ & IS_RELATION) != IS_RELATION || attr.is_null()) return;
 
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  if (!should_output_single_field())
+  {
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(key), strlen(key)));
+  }
+
   yajl_gen_error(yajl_gen_integer(JSON_GEN_HANDLE, attr));
 
-  if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+  if (should_clean()) attr.clean();
 }
 

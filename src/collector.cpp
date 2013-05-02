@@ -1,5 +1,5 @@
 #include <restful_mapper/collector.h>
-#include <restful_mapper/internal/json.h>
+#include <restful_mapper/internal/yajl_helpers.h>
 
 using namespace std;
 using namespace restful_mapper;

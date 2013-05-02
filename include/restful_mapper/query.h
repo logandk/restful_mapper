@@ -1,26 +1,25 @@
 #ifndef RESTFUL_MAPPER_QUERY_H
 #define RESTFUL_MAPPER_QUERY_H
 
-#include <string>
-#include <vector>
+#include <restful_mapper/json.h>
 
 // Some macros. For the sake of brevity...
 #define _OP_PAR_NONE(op) \
   Query &op() { return filter(cur_field_, #op); }
 
 #define _OP_PAR_SINGLE(op) \
-  Query &op(const int         &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const double      &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const bool        &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const std::string &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const char        *value) { return filter(cur_field_, #op, encode(value)); } \
+  Query &op(const int         &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const double      &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const bool        &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const std::string &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const char        *value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const Query       &value) { return filter(cur_field_, #op, value);         }
 
 #define _OP_PAR_LIST(op) \
-  Query &op(const std::vector<int>         &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const std::vector<double>      &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const std::vector<bool>        &value) { return filter(cur_field_, #op, encode(value)); } \
-  Query &op(const std::vector<std::string> &value) { return filter(cur_field_, #op, encode(value)); }
+  Query &op(const std::vector<int>         &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const std::vector<double>      &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const std::vector<bool>        &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const std::vector<std::string> &value) { return filter(cur_field_, #op, Json::encode(value)); }
 
 namespace restful_mapper
 {
@@ -193,16 +192,6 @@ private:
   void operator=(Query const &); // Don't implement
 
   void reset_json();
-
-  std::string encode(const int &value);
-  std::string encode(const double &value);
-  std::string encode(const bool &value);
-  std::string encode(const std::string &value);
-  std::string encode(const char *value);
-  std::string encode(const std::vector<int> &value);
-  std::string encode(const std::vector<double> &value);
-  std::string encode(const std::vector<bool> &value);
-  std::string encode(const std::vector<std::string> &value);
 };
 
 }

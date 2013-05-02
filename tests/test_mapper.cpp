@@ -280,6 +280,33 @@ TEST(MapperTest, NullValue)
   ASSERT_STREQ("{\"task\":null,\"priority\":null}", m.dump().c_str());
 }
 
+TEST(MapperTest, SingleField)
+{
+  Field<string> f_string;
+  Field<int> f_int;
+  Field<bool> f_bool;
+  Field<double> f_double;
+  Field<time_t> f_time;
+  Primary f_primary;
+
+  Mapper m(SINGLE_FIELD);
+  m.set_field_filter("priority");
+
+  f_int = 6;
+  f_double = 3.0;
+  f_primary = 4;
+
+
+  m.set("task", f_string);
+  m.set("priority", f_int);
+  m.set("completed", f_bool);
+  m.set("time", f_double);
+  m.set("due", f_time);
+  m.set("id", f_primary);
+
+  ASSERT_STREQ("6", m.dump().c_str());
+}
+
 TEST(MapperTest, SetForceDirty)
 {
   Field<string> f_string;

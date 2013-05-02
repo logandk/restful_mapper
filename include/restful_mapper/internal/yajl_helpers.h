@@ -1,5 +1,5 @@
-#ifndef RESTFUL_MAPPER_JSON_H
-#define RESTFUL_MAPPER_JSON_H
+#ifndef RESTFUL_MAPPER_YAJL_HELPERS_H
+#define RESTFUL_MAPPER_YAJL_HELPERS_H
 
 #include <stdexcept>
 #include <sstream>
@@ -75,5 +75,5 @@ void yajl_gen_value(yajl_gen generator, yajl_val value);
 void yajl_gen_json(yajl_gen generator, const char *value);
 std::string yajl_encode(yajl_val value);
 
-#endif // RESTFUL_MAPPER_JSON_H
+#endif // RESTFUL_MAPPER_YAJL_HELPERS_H
 

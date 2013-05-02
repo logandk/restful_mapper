@@ -1,131 +1,131 @@
-#include <restful_mapper/internal/json.h>
+#include <restful_mapper/json.h>
+#include <restful_mapper/internal/yajl_helpers.h>
 
 using namespace std;
+using namespace restful_mapper;
 
-void yajl_gen_error(const yajl_gen_status &status)
+// Helper macros
+#define JSON_GEN_HANDLE static_cast<yajl_gen>(json_gen_ptr_)
+
+Json::Json()
 {
-  switch (status)
+  json_gen_ptr_ = NULL;
+}
+
+Json::~Json()
+{
+  if (json_gen_ptr_)
   {
-    case yajl_gen_keys_must_be_strings:
-      throw runtime_error("A non-string JSON key was passed");
-
-    case yajl_max_depth_exceeded:
-      throw runtime_error("YAJL's maximum generation depth was exceeded");
-
-    case yajl_gen_in_error_state:
-      throw runtime_error("A JSON generator function was called while in an error state");
-
-    case yajl_gen_generation_complete:
-      throw runtime_error("A complete JSON document has been generated");
-
-    case yajl_gen_invalid_number:
-      throw runtime_error("An invalid floating point value was passed to the JSON generator (infinity or NaN)");
-
-    case yajl_gen_no_buf:
-      throw runtime_error("A print callback was passed in, so there is no internal buffer to get from");
-
-    case yajl_gen_invalid_string:
-      throw runtime_error("An invalid UTF-8 string was passed to the JSON generator");
+    yajl_gen_free(JSON_GEN_HANDLE);
   }
 }
 
-string yajl_gen_dump(yajl_gen generator)
+void Json::reset_json()
 {
-  const unsigned char *buf;
-  size_t len;
+  if (json_gen_ptr_)
+  {
+    yajl_gen_free(JSON_GEN_HANDLE);
+  }
 
-  yajl_gen_error(yajl_gen_get_buf(generator, &buf, &len));
-
-  return string(reinterpret_cast<const char *>(buf), len);
+  // Allocate JSON_GEN_HANDLE
+  json_gen_ptr_ = static_cast<void *>(yajl_gen_alloc(NULL));
+  yajl_gen_config(JSON_GEN_HANDLE, yajl_gen_validate_utf8, 1);
 }
 
-void yajl_gen_value(yajl_gen generator, yajl_val value)
+string Json::encode_(const int &value)
 {
-  if (YAJL_IS_STRING(value))
-  {
-    yajl_gen_error(yajl_gen_string(generator, reinterpret_cast<const unsigned char *>(YAJL_GET_STRING(value)), strlen(YAJL_GET_STRING(value))));
-  }
-  else if (YAJL_IS_NUMBER(value))
-  {
-    yajl_gen_error(yajl_gen_number(generator, YAJL_GET_NUMBER(value), strlen(YAJL_GET_NUMBER(value))));
-  }
-  else if (YAJL_IS_OBJECT(value))
-  {
-    yajl_gen_error(yajl_gen_map_open(generator));
-
-    for (size_t i = 0; i < YAJL_GET_OBJECT(value)->len; i++)
-    {
-      yajl_gen_error(yajl_gen_string(generator, reinterpret_cast<const unsigned char *>(YAJL_GET_OBJECT(value)->keys[i]), strlen(YAJL_GET_OBJECT(value)->keys[i])));
-      yajl_gen_value(generator, YAJL_GET_OBJECT(value)->values[i]);
-    }
-
-    yajl_gen_error(yajl_gen_map_close(generator));
-  }
-  else if (YAJL_IS_ARRAY(value))
-  {
-    yajl_gen_error(yajl_gen_array_open(generator));
-
-    for (size_t i = 0; i < YAJL_GET_ARRAY(value)->len; i++)
-    {
-      yajl_gen_value(generator, YAJL_GET_ARRAY(value)->values[i]);
-    }
-
-    yajl_gen_error(yajl_gen_array_close(generator));
-  }
-  else if (YAJL_IS_TRUE(value))
-  {
-    yajl_gen_error(yajl_gen_bool(generator, true));
-  }
-  else if (YAJL_IS_FALSE(value))
-  {
-    yajl_gen_error(yajl_gen_bool(generator, false));
-  }
-  else if (YAJL_IS_NULL(value))
-  {
-    yajl_gen_error(yajl_gen_null(generator));
-  }
+  reset_json();
+  yajl_gen_error(yajl_gen_integer(JSON_GEN_HANDLE, value));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
 }
 
-void yajl_gen_json(yajl_gen generator, const char *value)
+string Json::encode_(const double &value)
 {
-  char errors[1024];
-  yajl_val json_tree = yajl_tree_parse(value, errors, sizeof(value));
-
-  if (json_tree == NULL)
-  {
-    throw runtime_error(string("JSON parse error:\n") + errors);
-  }
-
-  yajl_gen_value(generator, json_tree);
-  yajl_tree_free(json_tree);
+  reset_json();
+  yajl_gen_error(yajl_gen_double(JSON_GEN_HANDLE, value));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
 }
 
-string yajl_encode(yajl_val value)
+string Json::encode_(const bool &value)
 {
-  string dump;
-
-  // Allocate generator
-  yajl_gen generator = yajl_gen_alloc(NULL);
-  yajl_gen_config(generator, yajl_gen_validate_utf8, 1);
-
-  try
-  {
-    yajl_gen_value(generator, value);
-
-    // Convert to string
-    dump = yajl_gen_dump(generator);
-  }
-  catch (...)
-  {
-    // Free generator
-    yajl_gen_free(generator);
-
-    throw;
-  }
-
-  // Free generator
-  yajl_gen_free(generator);
-
-  return dump;
+  reset_json();
+  yajl_gen_error(yajl_gen_bool(JSON_GEN_HANDLE, value));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
 }
 
+string Json::encode_(const string &value)
+{
+  reset_json();
+  string converted = local_to_utf8(value);
+  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(converted.c_str()), converted.size()));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
+}
+
+string Json::encode_(const char *value)
+{
+  reset_json();
+  string converted = local_to_utf8(value);
+  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(converted.c_str()), converted.size()));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
+}
+
+string Json::encode_(const std::vector<int> &value)
+{
+  reset_json();
+  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
+
+  std::vector<int>::const_iterator i, i_end = value.end();
+  for (i = value.begin(); i != i_end; ++i)
+  {
+    yajl_gen_error(yajl_gen_integer(JSON_GEN_HANDLE, *i));
+  }
+
+  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
+}
+
+string Json::encode_(const std::vector<double> &value)
+{
+  reset_json();
+  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
+
+  std::vector<double>::const_iterator i, i_end = value.end();
+  for (i = value.begin(); i != i_end; ++i)
+  {
+    yajl_gen_error(yajl_gen_double(JSON_GEN_HANDLE, *i));
+  }
+
+  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
+}
+
+string Json::encode_(const std::vector<bool> &value)
+{
+  reset_json();
+  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
+
+  std::vector<bool>::const_iterator i, i_end = value.end();
+  for (i = value.begin(); i != i_end; ++i)
+  {
+    yajl_gen_error(yajl_gen_bool(JSON_GEN_HANDLE, *i));
+  }
+
+  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
+}
+
+string Json::encode_(const std::vector<string> &value)
+{
+  reset_json();
+  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
+
+  std::vector<string>::const_iterator i, i_end = value.end();
+  for (i = value.begin(); i != i_end; ++i)
+  {
+    string converted = local_to_utf8(*i);
+    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(converted.c_str()), converted.size()));
+  }
+
+  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
+  return yajl_gen_dump(JSON_GEN_HANDLE);
+}

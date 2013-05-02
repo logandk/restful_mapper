@@ -1,6 +1,6 @@
 #include <restful_mapper/api.h>
 #include <restful_mapper/meta.h>
-#include <restful_mapper/internal/json.h>
+#include <restful_mapper/internal/yajl_helpers.h>
 #include <curl/curl.h>
 #include <sstream>
 #include <cstdlib>

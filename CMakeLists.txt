@@ -19,7 +19,7 @@ if (BORLAND)
   add_definitions(-w-hid)
 endif()
 
-add_library(restful_mapper src/api.cpp src/mapper.cpp src/collector.cpp src/query.cpp src/json.cpp src/utf8.cpp)
+add_library(restful_mapper src/api.cpp src/collector.cpp src/json.cpp src/mapper.cpp src/query.cpp src/utf8.cpp src/yajl_helpers.cpp)
 target_link_libraries(restful_mapper curl yajl iconv charset)
 
 install(TARGETS restful_mapper DESTINATION lib)
@@ -28,6 +28,7 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/api.h DESTINATI
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/collector.h DESTINATION include/restful_mapper)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/field.h DESTINATION include/restful_mapper)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/internal/iso8601.h DESTINATION include/restful_mapper/internal)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/json.h DESTINATION include/restful_mapper)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/mapper.h DESTINATION include/restful_mapper)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/meta.h DESTINATION include/restful_mapper)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/restful_mapper/model.h DESTINATION include/restful_mapper)

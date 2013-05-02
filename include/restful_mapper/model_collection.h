@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <restful_mapper/json.h>
+
+#include <iostream>
 
 namespace restful_mapper
 {
@@ -37,7 +40,7 @@ public:
 
   const T &find(const int &id) const
   {
-    iterator i, i_end = end();
+    const_iterator i, i_end = end();
 
     for (i = begin(); i != i_end; ++i)
     {
@@ -47,6 +50,81 @@ public:
     std::ostringstream s;
     s << "Cannot find " << typeid(T).name() << " with id " << id;
     throw std::out_of_range(s.str());
+  }
+
+  ModelCollection<T> find(const std::string &field, const int &value) const
+  {
+    return find_by_field(field, Json::encode(value));
+  }
+
+  T &find_first(const std::string &field, const int &value)
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  const T &find_first(const std::string &field, const int &value) const
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  ModelCollection<T> find(const std::string &field, const double &value) const
+  {
+    return find_by_field(field, Json::encode(value));
+  }
+
+  T &find_first(const std::string &field, const double &value)
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  const T &find_first(const std::string &field, const double &value) const
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  ModelCollection<T> find(const std::string &field, const bool &value) const
+  {
+    return find_by_field(field, Json::encode(value));
+  }
+
+  T &find_first(const std::string &field, const bool &value)
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  const T &find_first(const std::string &field, const bool &value) const
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  ModelCollection<T> find(const std::string &field, const std::string &value) const
+  {
+    return find_by_field(field, Json::encode(value));
+  }
+
+  T &find_first(const std::string &field, const std::string &value)
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  const T &find_first(const std::string &field, const std::string &value) const
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  ModelCollection<T> find(const std::string &field, const char *value) const
+  {
+    return find_by_field(field, Json::encode(value));
+  }
+
+  T &find_first(const std::string &field, const char *value)
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  const T &find_first(const std::string &field, const char *value) const
+  {
+    return find_first_by_field(field, Json::encode(value));
   }
 
   // Reimplement std::vector for convenience
@@ -100,6 +178,48 @@ public:
 
 private:
   std::vector<T> items_;
+
+  ModelCollection<T> find_by_field(const std::string &field, const std::string &json_value) const
+  {
+    ModelCollection<T> results;
+    const_iterator i, i_end = end();
+
+    for (i = begin(); i != i_end; ++i)
+    {
+      std::cout << i->read_field(field) << std::endl;
+      if (i->read_field(field) == json_value) results.push_back(*i);
+    }
+
+    return results;
+  }
+
+  T &find_first_by_field(const std::string &field, const std::string &json_value)
+  {
+    iterator i, i_end = end();
+
+    for (i = begin(); i != i_end; ++i)
+    {
+      if (i->read_field(field) == json_value) return *i;
+    }
+
+    std::ostringstream s;
+    s << "Cannot find " << typeid(T).name() << " with " << field << " " << json_value;
+    throw std::out_of_range(s.str());
+  }
+
+  const T &find_first_by_field(const std::string &field, const std::string &json_value) const
+  {
+    const_iterator i, i_end = end();
+
+    for (i = begin(); i != i_end; ++i)
+    {
+      if (i->read_field(field) == json_value) return *i;
+    }
+
+    std::ostringstream s;
+    s << "Cannot find " << typeid(T).name() << " with " << field << " " << json_value;
+    throw std::out_of_range(s.str());
+  }
 };
 
 }

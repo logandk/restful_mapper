@@ -334,6 +334,13 @@ TEST_F(ModelTest, UpdateItem)
   ASSERT_FALSE(t4.completed.is_dirty());
 }
 
+TEST_F(ModelTest, ReadField)
+{
+  Todo t = Todo::find(2);
+
+  ASSERT_STREQ("\"???\"", t.read_field("task").c_str());
+}
+
 TEST_F(ModelTest, CloneItem)
 {
   Todo t = Todo::find(2);
@@ -429,6 +436,15 @@ TEST_F(ModelTest, CollectionFind)
   ASSERT_STREQ("What?", t.task.c_str());
 
   ASSERT_THROW(todos.find(4), out_of_range);
+
+  Todo::Collection found_todos = todos.find("completed", false);
+
+  ASSERT_EQ(2, found_todos.size());
+
+  Todo t2 = todos.find_first("completed", false);
+  ASSERT_STREQ("???", t2.task.c_str());
+
+  ASSERT_THROW(todos.find_first("priority", 5), out_of_range);
 }
 
 TEST_F(ModelTest, GetHasOne)

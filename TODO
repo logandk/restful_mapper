@@ -1,3 +1,4 @@
 Authorization (Flask-Principal)
 Document exceptions
-
+Abstract all JSON code into json.h
+Clean up mapper configuration

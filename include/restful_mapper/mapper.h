@@ -12,7 +12,8 @@ enum MapperConfig
   IGNORE_MISSING = 1,
   IS_RELATION    = 2,
   FORCE_DIRTY    = 4,
-  NO_CLEAN       = 8
+  NO_CLEAN       = 8,
+  SINGLE_FIELD   = 16
 };
 
 class Mapper
@@ -22,9 +23,24 @@ public:
   Mapper(std::string json_struct, const int &flags = 0);
   ~Mapper();
 
+  const int &flags() const
+  {
+    return flags_;
+  }
+
   void set_flags(const int &flags)
   {
     flags_ = flags;
+  }
+
+  const std::string &field_filter() const
+  {
+    return field_filter_;
+  }
+
+  void set_field_filter(const std::string &field_filter)
+  {
+    field_filter_ = field_filter;
   }
 
   std::string dump() const;
@@ -61,11 +77,12 @@ public:
 
   template <class T> void set(const char *key, const HasOne<T> &attr)
   {
-    if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+    if (should_output_single_field() && field_filter_ != key) return;
+    if (should_check_dirty() && !attr.is_dirty()) return;
 
     set(key, attr.to_json(flags_ | IS_RELATION));
 
-    if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+    if (should_clean()) attr.clean();
   }
 
   template <class T> void get(const char *key, HasMany<T> &attr) const
@@ -77,11 +94,12 @@ public:
 
   template <class T> void set(const char *key, const HasMany<T> &attr)
   {
-    if ((flags_ & FORCE_DIRTY) != FORCE_DIRTY && !attr.is_dirty()) return;
+    if (should_output_single_field() && field_filter_ != key) return;
+    if (should_check_dirty() && !attr.is_dirty()) return;
 
     set(key, attr.to_json(flags_ | IS_RELATION));
 
-    if ((flags_ & NO_CLEAN) != NO_CLEAN) attr.clean();
+    if (should_clean()) attr.clean();
   }
 
 private:
@@ -89,10 +107,26 @@ private:
   void *json_tree_ptr_;
 
   int flags_;
+  std::string field_filter_;
 
   // Disallow copy
   Mapper(Mapper const &);         // Don't Implement
   void operator=(Mapper const &); // Don't implement
+
+  inline bool should_clean() const
+  {
+    return (flags_ & NO_CLEAN) != NO_CLEAN;
+  }
+
+  inline bool should_check_dirty() const
+  {
+    return (flags_ & FORCE_DIRTY) != FORCE_DIRTY;
+  }
+
+  inline bool should_output_single_field() const
+  {
+    return (flags_ & SINGLE_FIELD) == SINGLE_FIELD;
+  }
 };
 
 }

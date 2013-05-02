@@ -1,5 +1,5 @@
 #include <restful_mapper/query.h>
-#include <restful_mapper/internal/json.h>
+#include <restful_mapper/internal/yajl_helpers.h>
 
 using namespace std;
 using namespace restful_mapper;
@@ -112,104 +112,6 @@ string Query::dump()
   yajl_gen_error(yajl_gen_map_close(JSON_GEN_HANDLE));
 
   // Convert to string
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const int &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_integer(JSON_GEN_HANDLE, value));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const double &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_double(JSON_GEN_HANDLE, value));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const bool &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_bool(JSON_GEN_HANDLE, value));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const string &value)
-{
-  reset_json();
-  string converted = local_to_utf8(value);
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(converted.c_str()), converted.size()));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const char *value)
-{
-  reset_json();
-  string converted = local_to_utf8(value);
-  yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(converted.c_str()), converted.size()));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const std::vector<int> &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
-
-  std::vector<int>::const_iterator i, i_end = value.end();
-  for (i = value.begin(); i != i_end; ++i)
-  {
-    yajl_gen_error(yajl_gen_integer(JSON_GEN_HANDLE, *i));
-  }
-
-  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const std::vector<double> &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
-
-  std::vector<double>::const_iterator i, i_end = value.end();
-  for (i = value.begin(); i != i_end; ++i)
-  {
-    yajl_gen_error(yajl_gen_double(JSON_GEN_HANDLE, *i));
-  }
-
-  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const std::vector<bool> &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
-
-  std::vector<bool>::const_iterator i, i_end = value.end();
-  for (i = value.begin(); i != i_end; ++i)
-  {
-    yajl_gen_error(yajl_gen_bool(JSON_GEN_HANDLE, *i));
-  }
-
-  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
-  return yajl_gen_dump(JSON_GEN_HANDLE);
-}
-
-string Query::encode(const std::vector<string> &value)
-{
-  reset_json();
-  yajl_gen_error(yajl_gen_array_open(JSON_GEN_HANDLE));
-
-  std::vector<string>::const_iterator i, i_end = value.end();
-  for (i = value.begin(); i != i_end; ++i)
-  {
-    string converted = local_to_utf8(*i);
-    yajl_gen_error(yajl_gen_string(JSON_GEN_HANDLE, reinterpret_cast<const unsigned char *>(converted.c_str()), converted.size()));
-  }
-
-  yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
   return yajl_gen_dump(JSON_GEN_HANDLE);
 }
 

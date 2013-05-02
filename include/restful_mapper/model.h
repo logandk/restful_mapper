@@ -48,10 +48,19 @@ public:
 
   std::string to_json(const int &flags = 0) const
   {
-    Mapper request_mapper(flags);
-    map_set(request_mapper);
+    Mapper mapper(flags);
+    map_set(mapper);
 
-    return request_mapper.dump();
+    return mapper.dump();
+  }
+
+  std::string read_field(const std::string &field) const
+  {
+    Mapper mapper(SINGLE_FIELD | NO_CLEAN | FORCE_DIRTY);
+    mapper.set_field_filter(field);
+    map_set(mapper);
+
+    return mapper.dump();
   }
 
   bool is_dirty() const
