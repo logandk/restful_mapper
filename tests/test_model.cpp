@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------
 #include <gtest/gtest.h>
 #include <restful_mapper/model.h>
+#include <restful_mapper/internal/utf8.h>
 
 using namespace std;
 using namespace restful_mapper;
@@ -587,6 +588,8 @@ TEST_F(ModelTest, FailedValidation)
 
 TEST_F(ModelTest, Encoding)
 {
+  local_charset = "latin1";
+
   Todo t;
   t.task = "Strange characters \xF8 here";
   t.save();
