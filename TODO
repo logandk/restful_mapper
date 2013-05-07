@@ -2,5 +2,6 @@ Add typedef T type; on field
 Use templates in mapper etc. instead of overloaded methods
 
 Clean up mapper configuration
+mapper.exist remove?
 
 Authorization (Flask-Principal)

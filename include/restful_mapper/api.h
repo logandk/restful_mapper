@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <map>
+#include <cctype>
 #include <restful_mapper/json.h>
 
 namespace restful_mapper
@@ -238,7 +239,7 @@ public:
         std::string field_value = i->second;
 
         // Capitalize field name
-        field_name[0] = toupper(field_name[0]);
+        field_name[0] = std::toupper(field_name[0]);
         what_ += separator;
         what_ += field_name;
         what_ += " ";
