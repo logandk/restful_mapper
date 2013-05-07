@@ -234,7 +234,7 @@ todos.find(4);
 todos.find("task", "Do something");
 
 // Find the first item in collection that has been completed
-todos.find("completed", true);
+todos.find_first("completed", true);
 ```
 
 ### Saving data ###

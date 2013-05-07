@@ -13,12 +13,12 @@ using namespace restful_mapper;
 TEST(JsonTest, EncodeLiteral)
 {
   long long a = 1;
-  double b = 1.8;
+  double b = 3.1415926535897931;
   bool c = false;
   string d = "a string";
 
   ASSERT_STREQ("1", Json::encode(a).c_str());
-  ASSERT_STREQ("1.8", Json::encode(b).c_str());
+  ASSERT_STREQ("3.14", Json::encode(b).substr(0, 4).c_str());
   ASSERT_STREQ("false", Json::encode(c).c_str());
   ASSERT_STREQ("\"a string\"", Json::encode(d).c_str());
   ASSERT_STREQ("\"another string\"", Json::encode("another string").c_str());
@@ -35,7 +35,7 @@ TEST(JsonTest, EncodeVector)
   a.push_back(3);
   a.push_back(8);
 
-  b.push_back(1.8);
+  b.push_back(3.1415926535897931);
 
   c.push_back(true);
   c.push_back(false);
@@ -45,7 +45,7 @@ TEST(JsonTest, EncodeVector)
   d.push_back("world");
 
   ASSERT_STREQ("[3,8]", Json::encode(a).c_str());
-  ASSERT_STREQ("[1.8]", Json::encode(b).c_str());
+  ASSERT_STREQ("[3.14", Json::encode(b).substr(0, 5).c_str());
   ASSERT_STREQ("[true,false,false]", Json::encode(c).c_str());
   ASSERT_STREQ("[\"hello\",\"world\"]", Json::encode(d).c_str());
   ASSERT_STREQ("[]", Json::encode(e).c_str());
@@ -62,7 +62,7 @@ TEST(JsonTest, EncodeMap)
   a["test"] = 3;
   a["flaf"] = 8;
 
-  b["amount"] = 1.8;
+  b["amount"] = 3.1415926535897931;
 
   c["1"] = true;
   c["2"] = false;
@@ -72,7 +72,7 @@ TEST(JsonTest, EncodeMap)
   d["to"] = "world";
 
   ASSERT_STREQ("{\"flaf\":8,\"test\":3}", Json::encode(a).c_str());
-  ASSERT_STREQ("{\"amount\":1.8}", Json::encode(b).c_str());
+  ASSERT_STREQ("{\"amount\":3.14", Json::encode(b).substr(0, 14).c_str());
   ASSERT_STREQ("{\"1\":true,\"2\":false,\"3\":false}", Json::encode(c).c_str());
   ASSERT_STREQ("{\"hello\":\"\",\"to\":\"world\"}", Json::encode(d).c_str());
   ASSERT_STREQ("{}", Json::encode(e).c_str());
@@ -112,7 +112,7 @@ TEST(JsonTest, Emit)
 TEST(JsonTest, DecodeLiteral)
 {
   ASSERT_EQ(1, Json::decode<long long>("1"));
-  ASSERT_EQ(1.8, Json::decode<double>("1.8"));
+  ASSERT_DOUBLE_EQ(3.1415926535897931, Json::decode<double>("3.1415926535897931"));
   ASSERT_EQ(true, Json::decode<bool>("true"));
   ASSERT_STREQ("a string", Json::decode<string>("\"a string\"").c_str());
 }
@@ -120,7 +120,7 @@ TEST(JsonTest, DecodeLiteral)
 TEST(JsonTest, DecodeVector)
 {
   vector<long long> a(Json::decode<vector<long long> >("[3,8]"));
-  vector<double> b(Json::decode<vector<double> >("[1.8]"));
+  vector<double> b(Json::decode<vector<double> >("[3.1415926535897931]"));
   vector<bool> c(Json::decode<vector<bool> >("[true,false,false]"));
   vector<string> d(Json::decode<vector<string> >("[\"hello\",\"world\"]"));
 
@@ -136,7 +136,7 @@ TEST(JsonTest, DecodeVector)
 TEST(JsonTest, DecodeMap)
 {
   map<string, long long> a(Json::decode<map<string, long long> >("{\"flaf\":8,\"test\":3}"));
-  map<string, double> b(Json::decode<map<string, double> >("{\"amount\":1.8}"));
+  map<string, double> b(Json::decode<map<string, double> >("{\"amount\":3.1415926535897931}"));
   map<string, bool> c(Json::decode<map<string, bool> >("{\"1\":true,\"2\":false,\"3\":false}"));
   map<string, string> d(Json::decode<map<string, string> >("{\"hello\":\"\",\"to\":\"world\"}"));
 
