@@ -1,9 +1,13 @@
 Version 0.2.0-dev
 	* Added clone() method
 	* Abstracted Collection class used by HasMany and Model
-	* Added find() method on collections
+	* Added find() method on collections for searching on primary key
+	* Added find() and find_first() methods to search on fields
 	* Switch to official flask-restless repo HEAD for tests
 	* Changed interface function signatures for const-correctness
+	* Merged all JSON code into a single module
+	* Use long long for primary keys
+	* Support long long fields
 
 Version 0.1.2
 	* First release
