@@ -9,6 +9,7 @@
 
 #define _OP_PAR_SINGLE(op) \
   Query &op(const int         &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const long long   &value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const double      &value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const bool        &value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const std::string &value) { return filter(cur_field_, #op, Json::encode(value)); } \
@@ -17,6 +18,7 @@
 
 #define _OP_PAR_LIST(op) \
   Query &op(const std::vector<int>         &value) { return filter(cur_field_, #op, Json::encode(value)); } \
+  Query &op(const std::vector<long long>   &value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const std::vector<double>      &value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const std::vector<bool>        &value) { return filter(cur_field_, #op, Json::encode(value)); } \
   Query &op(const std::vector<std::string> &value) { return filter(cur_field_, #op, Json::encode(value)); }
@@ -42,9 +44,6 @@ struct QueryOrderBy
 class Query
 {
 public:
-  Query();
-  ~Query();
-
   std::string dump();
 
   Query &operator()(const std::string &name)
@@ -148,6 +147,7 @@ public:
 
   void clear()
   {
+    json_.reset();
     cur_field_.clear();
     cur_reference_.clear();
     filters_.clear();
@@ -176,7 +176,7 @@ public:
   _OP_PAR_LIST(not_in);
 
 private:
-  void *json_gen_ptr_;
+  Json::Emitter json_;
 
   std::string cur_field_;
   std::string cur_reference_;
@@ -186,12 +186,6 @@ private:
   std::vector<int> offset_;
   std::vector<QueryOrderBy> order_by_;
   std::vector<bool> single_;
-
-  // Disallow copy
-  Query(Query const &);          // Don't Implement
-  void operator=(Query const &); // Don't implement
-
-  void reset_json();
 };
 
 }

@@ -1,4 +1,6 @@
-Authorization (Flask-Principal)
-Document exceptions
-Abstract all JSON code into json.h
+Add typedef T type; on field
+Use templates in mapper etc. instead of overloaded methods
+
 Clean up mapper configuration
+
+Authorization (Flask-Principal)

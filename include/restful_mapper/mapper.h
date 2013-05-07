@@ -2,6 +2,7 @@
 #define RESTFUL_MAPPER_MAPPER_H
 
 #include <restful_mapper/field.h>
+#include <restful_mapper/json.h>
 #include <restful_mapper/relation.h>
 
 namespace restful_mapper
@@ -21,7 +22,6 @@ class Mapper
 public:
   Mapper(const int &flags = 0);
   Mapper(std::string json_struct, const int &flags = 0);
-  ~Mapper();
 
   const int &flags() const
   {
@@ -43,7 +43,7 @@ public:
     field_filter_ = field_filter;
   }
 
-  std::string dump() const;
+  std::string dump();
 
   bool exists(const char *key) const;
 
@@ -52,6 +52,9 @@ public:
 
   void get(const char *key, Field<int> &attr) const;
   void set(const char *key, const Field<int> &attr);
+
+  void get(const char *key, Field<long long> &attr) const;
+  void set(const char *key, const Field<long long> &attr);
 
   void get(const char *key, Field<double> &attr) const;
   void set(const char *key, const Field<double> &attr);
@@ -103,15 +106,11 @@ public:
   }
 
 private:
-  void *json_gen_ptr_;
-  void *json_tree_ptr_;
+  Json::Emitter emitter_;
+  Json::Parser parser_;
 
   int flags_;
   std::string field_filter_;
-
-  // Disallow copy
-  Mapper(Mapper const &);         // Don't Implement
-  void operator=(Mapper const &); // Don't implement
 
   inline bool should_clean() const
   {

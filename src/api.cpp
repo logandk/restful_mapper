@@ -1,6 +1,5 @@
 #include <restful_mapper/api.h>
 #include <restful_mapper/meta.h>
-#include <restful_mapper/internal/yajl_helpers.h>
 #include <curl/curl.h>
 #include <sstream>
 #include <cstdlib>
@@ -391,63 +390,6 @@ void Api::read_environment_proxy()
   else
   {
     proxy_.clear();
-  }
-}
-
-BadRequestError::BadRequestError(const string &json_struct)
-  : ApiError("", 400), what_("")
-{
-  yajl_val json_tree = yajl_tree_parse(json_struct.c_str(), NULL, json_struct.size());
-
-  if (json_tree != NULL)
-  {
-    const char * path[] = { "message", (const char *) 0 };
-    yajl_val v = yajl_tree_get(json_tree, path, yajl_t_string);
-
-    if (v && YAJL_IS_STRING(v))
-    {
-      what_ = YAJL_GET_STRING(v);
-    }
-
-    yajl_tree_free(json_tree);
-  }
-}
-
-ValidationError::ValidationError(const string &json_struct)
-  : ApiError("", 400), what_("")
-{
-  string separator = "";
-
-  yajl_val json_tree = yajl_tree_parse(json_struct.c_str(), NULL, json_struct.size());
-
-  if (json_tree != NULL)
-  {
-    const char * path[] = { "validation_errors", (const char *) 0 };
-    yajl_val v = yajl_tree_get(json_tree, path, yajl_t_object);
-
-    if (v && YAJL_IS_OBJECT(v))
-    {
-      for (size_t i = 0; i < YAJL_GET_OBJECT(v)->len; i++)
-      {
-        if (YAJL_IS_STRING(YAJL_GET_OBJECT(v)->values[i]))
-        {
-          string field_name  = YAJL_GET_OBJECT(v)->keys[i];
-          string field_value = YAJL_GET_STRING(YAJL_GET_OBJECT(v)->values[i]);
-
-          errors_[field_name] = field_value;
-
-          // Capitalize field name
-          field_name[0] = toupper(field_name[0]);
-          what_ += separator;
-          what_ += field_name;
-          what_ += " ";
-          what_ += field_value;
-          separator = "\n";
-        }
-      }
-    }
-
-    yajl_tree_free(json_tree);
   }
 }
 

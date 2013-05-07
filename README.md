@@ -229,6 +229,12 @@ Todo::Collection todos = Todo::find_all();
 
 // Find an item in the collection by id
 todos.find(4);
+
+// Find all items in collection where task is "Do something"
+todos.find("task", "Do something");
+
+// Find the first item in collection that has been completed
+todos.find("completed", true);
 ```
 
 ### Saving data ###
@@ -296,6 +302,23 @@ q.order_by_asc(q.field("priority"));
 
 Todo::Collection todos = Todo::find_all(q);
 ```
+
+### Exceptions ###
+
+Some API errors are caught using custom exceptions.
+
+* Internal [libcurl][7] errors are represented as a `restful_mapper::ApiError`,
+  which has adds a `code()` method to `std::runtime_error`.
+* `restful_mapper::AuthenticationError` is thrown when authentication fails,
+  and has the same properties as `restful_mapper::ApiError`.
+* `restful_mapper::BadRequestError` is thrown when an error occurs on the API
+  side, and has the same properties as `restful_mapper::ApiError`.
+* `restful_mapper::ValidationError` is thrown when one or more validation
+  errors are thrown by the API. It has the same properties as
+  `restful_mapper::ApiError`, but adds an `errors()` method, which returns a
+  `restful_mapper::ValidationError::FieldMap` map with field names as keys and
+  error messages as values. This map may also be accessed directly through the
+  overloaded `operator[]`.
 
 # Contributing #
 

@@ -1,2 +1,2 @@
-https://github.com/jfinkels/flask-restless/archive/master.zip#egg=Flask-Restless==0.10.0-dev
+Flask-Restless==0.10
 Flask-SQLAlchemy==0.16

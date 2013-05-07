@@ -254,7 +254,7 @@ public:
   const std::time_t &operator=(const std::time_t &value) { return FieldBase<std::time_t>::operator=(value); }
   virtual std::string name() { return typeid(std::time_t).name(); }
 
-  const std::time_t &set(const char *value, const bool &keep_clean = false)
+  const std::time_t &set(const std::string &value, const bool &keep_clean = false)
   {
     return FieldBase<std::time_t>::set(from_iso8601(value), keep_clean);
   }
@@ -280,7 +280,7 @@ public:
     return to_iso8601();
   }
 
-  const std::time_t &operator=(const char *value)
+  const std::time_t &operator=(const std::string &value)
   {
     return set(value);
   }
@@ -375,12 +375,12 @@ public:
  *
  * Can only be set once, otherwise it will throw.
  */
-class Primary : public FieldBase<int>
+class Primary : public FieldBase<long long>
 {
 public:
   // Inherit from FieldBase
-  Primary() : FieldBase<int>(), is_assigned_(false) {}
-  virtual std::string name() { return typeid(int).name(); }
+  Primary() : FieldBase<long long>(), is_assigned_(false) {}
+  virtual std::string name() { return typeid(long long).name(); }
 
   operator std::string() const
   {
@@ -389,7 +389,7 @@ public:
     return s.str();
   }
 
-  const int &set(const int &value, const bool &keep_clean = false)
+  const long long &set(const long long &value, const bool &keep_clean = false)
   {
     if (is_assigned_ && value != value_)
     {
@@ -397,10 +397,10 @@ public:
     }
 
     is_assigned_ = true;
-    return FieldBase<int>::set(value, keep_clean);
+    return FieldBase<long long>::set(value, keep_clean);
   }
 
-  const int &operator=(const int &value)
+  const long long &operator=(const long long &value)
   {
     return set(value);
   }

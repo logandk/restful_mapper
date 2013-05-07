@@ -23,8 +23,16 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../vendor/curl/lib)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../vendor/iconv/include)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../vendor/iconv/lib)
 
-FILE(GLOB test_files "test_*.cpp")
-add_executable(tests ${test_files})
+add_executable(
+  tests
+  test_api.cpp
+  test_field.cpp
+  test_json.cpp
+  test_mapper.cpp
+  test_model.cpp
+  test_query.cpp
+  test_relation.cpp
+  test_utf8.cpp)
 target_link_libraries(tests gtest gtest_main restful_mapper yajl)
 
 if (BORLAND)

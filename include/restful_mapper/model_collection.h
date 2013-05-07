@@ -7,8 +7,6 @@
 #include <stdexcept>
 #include <restful_mapper/json.h>
 
-#include <iostream>
-
 namespace restful_mapper
 {
 
@@ -24,7 +22,7 @@ public:
     return items_;
   }
 
-  T &find(const int &id)
+  T &find(const long long &id)
   {
     iterator i, i_end = end();
 
@@ -38,7 +36,12 @@ public:
     throw std::out_of_range(s.str());
   }
 
-  const T &find(const int &id) const
+  T &find(const int &id)
+  {
+    return find((long long) id);
+  }
+
+  const T &find(const long long &id) const
   {
     const_iterator i, i_end = end();
 
@@ -52,6 +55,11 @@ public:
     throw std::out_of_range(s.str());
   }
 
+  const T &find(const int &id) const
+  {
+      return find((long long) id);
+  }
+
   ModelCollection<T> find(const std::string &field, const int &value) const
   {
     return find_by_field(field, Json::encode(value));
@@ -63,6 +71,21 @@ public:
   }
 
   const T &find_first(const std::string &field, const int &value) const
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  ModelCollection<T> find(const std::string &field, const long long &value) const
+  {
+    return find_by_field(field, Json::encode(value));
+  }
+
+  T &find_first(const std::string &field, const long long &value)
+  {
+    return find_first_by_field(field, Json::encode(value));
+  }
+
+  const T &find_first(const std::string &field, const long long &value) const
   {
     return find_first_by_field(field, Json::encode(value));
   }
@@ -186,7 +209,6 @@ private:
 
     for (i = begin(); i != i_end; ++i)
     {
-      std::cout << i->read_field(field) << std::endl;
       if (i->read_field(field) == json_value) results.push_back(*i);
     }
 

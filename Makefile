@@ -5,7 +5,7 @@ all:
 
 test: all
 	cd tests/build; cmake ${CMAKE_ARGS} ..; make
-	./tests/build/tests
+	./tests/build/tests ${TEST_ARGS}
 
 vendor:
 	cd vendor; cmake ${CMAKE_ARGS} .; make

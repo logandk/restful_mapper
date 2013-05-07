@@ -4,10 +4,6 @@ compiler:
   - gcc
   - clang
 
-matrix:
- include:
-   - compiler: i586-mingw32msvc-gcc
-
 python: "2.7"
 
 install:

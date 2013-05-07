@@ -126,9 +126,9 @@ public:
   {
     Collection objects;
 
-    Collector collector(Api::get(T().url()));
+    Json::Parser collector(Api::get(T().url()));
 
-    std::vector<std::string> partials = collector.get("objects");
+    std::vector<std::string> partials = collector.find("objects").dump_array();
     std::vector<std::string>::const_iterator i, i_end = partials.end();
 
     for (i = partials.begin(); i != i_end; ++i)
@@ -157,9 +157,9 @@ public:
     Collection objects;
 
     std::string url = Api::query_param(T().url(), "q", query.dump());
-    Collector collector(Api::get(url));
+    Json::Parser collector(Api::get(url));
 
-    std::vector<std::string> partials = collector.get("objects");
+    std::vector<std::string> partials = collector.find("objects").dump_array();
     std::vector<std::string>::const_iterator i, i_end = partials.end();
 
     for (i = partials.begin(); i != i_end; ++i)

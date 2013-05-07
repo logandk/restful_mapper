@@ -1,7 +1,6 @@
 #ifndef RESTFUL_MAPPER_RELATION_H
 #define RESTFUL_MAPPER_RELATION_H
 
-#include <restful_mapper/collector.h>
 #include <restful_mapper/model_collection.h>
 
 namespace restful_mapper
@@ -17,9 +16,9 @@ public:
   {
     ModelCollection<T>::clear();
 
-    Collector collector(values);
+    Json::Parser collector(values);
 
-    std::vector<std::string> partials = collector.get();
+    std::vector<std::string> partials = collector.root().dump_array();
     std::vector<std::string>::const_iterator i, i_end = partials.end();
 
     for (i = partials.begin(); i != i_end; ++i)

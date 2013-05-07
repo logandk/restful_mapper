@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <map>
+#include <restful_mapper/json.h>
 
 namespace restful_mapper
 {
@@ -193,7 +194,18 @@ private:
 class BadRequestError : public ApiError
 {
 public:
-  explicit BadRequestError(const std::string &json_struct);
+  explicit BadRequestError(const std::string &json_struct) : ApiError("", 400)
+  {
+    try
+    {
+      Json::Parser parser(json_struct);
+      what_ = parser.find("message").to_string();
+    }
+    catch (std::runtime_error &e)
+    {
+      // Swallow
+    }
+  }
   virtual ~BadRequestError() throw() {}
 
   virtual const char *what() const throw()
@@ -210,7 +222,36 @@ class ValidationError : public ApiError
 public:
   typedef std::map<std::string, std::string> FieldMap;
 
-  explicit ValidationError(const std::string &json_struct);
+  explicit ValidationError(const std::string &json_struct) : ApiError("", 400)
+  {
+    try
+    {
+      std::string separator = "";
+      Json::Parser parser(json_struct);
+
+      errors_ = parser.find("validation_errors").to_string_map();
+
+      FieldMap::const_iterator i, i_end = errors_.end();
+      for (i = errors_.begin(); i != i_end; ++i)
+      {
+        std::string field_name = i->first;
+        std::string field_value = i->second;
+
+        // Capitalize field name
+        field_name[0] = toupper(field_name[0]);
+        what_ += separator;
+        what_ += field_name;
+        what_ += " ";
+        what_ += field_value;
+        separator = "\n";
+      }
+    }
+    catch (std::runtime_error &e)
+    {
+      // Swallow
+    }
+  }
+
   virtual ~ValidationError() throw() {}
 
   const FieldMap &errors() const
