@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 #include <sstream>
 #include <cstdlib>
+#include <cstring>
 
 using namespace std;
 using namespace restful_mapper;
