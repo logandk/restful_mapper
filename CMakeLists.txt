@@ -19,7 +19,7 @@ if (BORLAND)
   add_definitions(-w-hid)
 endif()
 
-add_library(restful_mapper src/api.cpp src/json.cpp src/mapper.cpp src/query.cpp src/utf8.cpp)
+add_library(restful_mapper src/api.cpp src/json.cpp src/utf8.cpp)
 target_link_libraries(restful_mapper curl yajl iconv charset)
 
 install(TARGETS restful_mapper DESTINATION lib)

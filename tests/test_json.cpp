@@ -156,6 +156,8 @@ TEST(JsonTest, Parse)
   ASSERT_TRUE(parser.is_loaded());
   ASSERT_TRUE(parser.exists("test"));
   ASSERT_FALSE(parser.exists("non-existing"));
+  ASSERT_TRUE(parser.exists("hello"));
+  ASSERT_TRUE(parser.empty("hello"));
 
   ASSERT_EQ(4, parser.find("test").to_int());
   ASSERT_STREQ("test", parser.find("test").name().c_str());

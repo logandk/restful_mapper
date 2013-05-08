@@ -61,6 +61,13 @@ void yajl_wrong_type(const string &key, yajl_val value, const string &expected_t
   throw runtime_error(s.str());
 }
 
+void Json::not_found(const string &name)
+{
+  ostringstream s;
+  s << "JSON node \"" << name <<  "\" not found";
+  throw runtime_error(s.str());
+}
+
 Json::Emitter::Emitter()
 {
   json_gen_ptr_ = NULL;
@@ -466,9 +473,7 @@ Json::Node::Node(const string &name, void *json_node)
 
   if (!json_tree_ptr_)
   {
-    ostringstream s;
-    s << "JSON node \"" << name_ <<  "\" not found";
-    throw runtime_error(s.str());
+    Json::not_found(name_);
   }
 }
 
@@ -778,6 +783,24 @@ bool Json::Parser::exists(const string &key) const
 
   const char *path[] = { key.c_str(), (const char *) 0 };
   return yajl_tree_get(JSON_TREE_HANDLE, path, yajl_t_any) != NULL;
+}
+
+bool Json::Parser::empty(const string &key) const
+{
+  if (!is_loaded())
+  {
+    throw runtime_error("No JSON loaded in parser");
+  }
+
+  const char *path[] = { key.c_str(), (const char *) 0 };
+  yajl_val v = yajl_tree_get(JSON_TREE_HANDLE, path, yajl_t_any);
+
+  if (!v)
+  {
+    return true;
+  }
+
+  return YAJL_IS_NULL(v);
 }
 
 Json::Node Json::Parser::find(const string &key) const

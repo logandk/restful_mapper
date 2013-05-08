@@ -9,7 +9,7 @@ using namespace std;
 using namespace restful_mapper;
 
 // Initialize user agent string
-const char *Api::user_agent_ = "RestfulMapper/" VERSION;
+const char *Api::user_agent_ = "restful_mapper/" VERSION;
 
 // Initialize content type string
 const char *Api::content_type_ = "application/json";

@@ -254,6 +254,9 @@ protected:
     Api::set_password("test");
     Api::set_proxy("");
     Api::get("/reload");
+
+    putenv("TZ=EST5");
+    tzset();
   }
 };
 
@@ -340,6 +343,10 @@ TEST_F(ModelTest, ReadField)
   Todo t = Todo::find(2);
 
   ASSERT_STREQ("\"???\"", t.read_field("task").c_str());
+
+  City c = City::find(2);
+
+  ASSERT_STREQ("{\"id\":2,\"city_id\":2,\"code\":\"8000\",\"city\":null}", c.read_field("zipcode").c_str());
 }
 
 TEST_F(ModelTest, CloneItem)

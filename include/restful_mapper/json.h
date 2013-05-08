@@ -33,6 +33,8 @@ public:
   static std::string encode(const std::map<std::string, bool> &value) { Emitter e; e.emit(value); return e.dump(); }
   static std::string encode(const std::map<std::string, std::string> &value) { Emitter e; e.emit(value); return e.dump(); }
 
+  static void not_found(const std::string &name);
+
   template <class T> static T decode(const std::string &json_struct) { Parser p(json_struct); return p.root(); }
 
   class Emitter
@@ -139,6 +141,7 @@ public:
     std::map<std::string, bool> to_bool_map() const;
 
     operator std::string() const { return to_string(); }
+    operator int() const { return to_int(); }
     operator long long() const { return to_int(); }
     operator double() const { return to_double(); }
     operator bool() const { return to_bool(); }
@@ -171,6 +174,7 @@ public:
     void load(const std::string &json_struct);
     Node root() const;
     bool exists(const std::string &key) const;
+    bool empty(const std::string &key) const;
     Node find(const std::string &key) const;
     Node find(const char **key) const;
 

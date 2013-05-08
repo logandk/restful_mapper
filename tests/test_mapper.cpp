@@ -131,7 +131,7 @@ TEST(MapperTest, IsRelation)
   Primary f_primary;
   Primary f_primary2;
 
-  Mapper m("{ \"task\": \"Profit!!!\", \"id\": 3 }", IS_RELATION);
+  Mapper m("{ \"task\": \"Profit!!!\", \"id\": 3 }", INCLUDE_PRIMARY_KEY);
 
   m.get("id", f_primary);
   m.get("task", f_string);
@@ -139,7 +139,7 @@ TEST(MapperTest, IsRelation)
   ASSERT_EQ(3, int(f_primary));
   ASSERT_STREQ("Profit!!!", string(f_string).c_str());
 
-  Mapper m2(IS_RELATION);
+  Mapper m2(INCLUDE_PRIMARY_KEY);
 
   f_primary2 = 10;
   f_string = "Cool";
@@ -149,7 +149,7 @@ TEST(MapperTest, IsRelation)
 
   ASSERT_STREQ("{\"task\":\"Cool\",\"id\":10}", m2.dump().c_str());
 
-  Mapper m3(IS_RELATION);
+  Mapper m3(INCLUDE_PRIMARY_KEY);
 
   f_string.touch();
   m3.set("task", f_string);
@@ -157,7 +157,7 @@ TEST(MapperTest, IsRelation)
 
   ASSERT_STREQ("{\"task\":\"Cool\",\"id\":3}", m3.dump().c_str());
 
-  Mapper m4(IS_RELATION);
+  Mapper m4(INCLUDE_PRIMARY_KEY);
   Primary f_primary3;
 
   f_string.touch();
@@ -176,7 +176,7 @@ TEST(MapperTest, IgnoreMissing)
   Field<time_t> f_time;
   Primary f_primary;
 
-  Mapper m("{ \"priority\": 994, \"completed_on\": \"2013-12-05T00:00:00\" }", IGNORE_MISSING);
+  Mapper m("{ \"priority\": 994, \"completed_on\": \"2013-12-05T00:00:00\" }", IGNORE_MISSING_FIELDS);
 
   m.get("priority", f_int);
   ASSERT_EQ(994, int(f_int));
@@ -197,7 +197,7 @@ TEST(MapperTest, IgnoreMissing)
   ASSERT_TRUE(f_primary.is_null());
 
   Mapper m2("{ \"priority\": 994, \"completed_on\": \"2013-12-05T00:00:00\" }");
-  m2.set_flags(IGNORE_MISSING);
+  m2.set_flags(IGNORE_MISSING_FIELDS);
 
   m2.get("priority", f_int);
   ASSERT_EQ(994, int(f_int));
@@ -289,13 +289,12 @@ TEST(MapperTest, SingleField)
   Field<time_t> f_time;
   Primary f_primary;
 
-  Mapper m(SINGLE_FIELD);
-  m.set_field_filter("priority");
-
   f_int = 6;
   f_double = 3.0;
   f_primary = 4;
 
+  Mapper m(OUTPUT_SINGLE_FIELD);
+  m.set_field_filter("priority");
 
   m.set("task", f_string);
   m.set("priority", f_int);
@@ -305,6 +304,17 @@ TEST(MapperTest, SingleField)
   m.set("id", f_primary);
 
   ASSERT_STREQ("6", m.dump().c_str());
+
+  HasOne<Item> parent;
+  parent.build();
+  parent->revision = 4;
+
+  Mapper m2(OUTPUT_SINGLE_FIELD);
+  m2.set_field_filter("parent");
+
+  m2.set("parent", parent);
+
+  ASSERT_STREQ("{\"revision\":4}", m2.dump().c_str());
 }
 
 TEST(MapperTest, SetForceDirty)
@@ -316,7 +326,7 @@ TEST(MapperTest, SetForceDirty)
   Field<time_t> f_time;
   Primary f_primary;
 
-  Mapper m(FORCE_DIRTY);
+  Mapper m(IGNORE_DIRTY_FLAG);
 
   f_int.clear();
   f_double = 3.0;
@@ -332,7 +342,7 @@ TEST(MapperTest, SetForceDirty)
   ASSERT_STREQ("{\"task\":null,\"priority\":null,\"completed\":null,\"time\":3.0,\"due\":null}", m.dump().c_str());
 }
 
-TEST(MapperTest, GetForceDirty)
+TEST(MapperTest, GetTouchFields)
 {
   Field<string> f_string;
   Field<int> f_int;
@@ -340,7 +350,7 @@ TEST(MapperTest, GetForceDirty)
   Field<double> f_double;
   Primary f_primary;
 
-  Mapper m("{\"task\":null,\"priority\":null,\"completed\":null,\"time\":3.0}", FORCE_DIRTY | IGNORE_MISSING);
+  Mapper m("{\"task\":null,\"priority\":null,\"completed\":null,\"time\":3.0}", TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
 
   f_int.clear();
   f_double = 3.0;
@@ -394,7 +404,7 @@ TEST(MapperTest, HasOneNull)
   m2.set("child", child2);
   ASSERT_STREQ("{}", m2.dump().c_str());
 
-  Mapper m3(FORCE_DIRTY);
+  Mapper m3(IGNORE_DIRTY_FLAG);
   m3.set("child", child2);
   ASSERT_STREQ("{\"child\":null}", m3.dump().c_str());
 }
@@ -421,7 +431,7 @@ TEST(MapperTest, HasOneWithValue)
   m2.set("child", child);
   ASSERT_STREQ("{}", m2.dump().c_str());
 
-  Mapper m3(FORCE_DIRTY);
+  Mapper m3(IGNORE_DIRTY_FLAG);
   m3.set("child", child);
   ASSERT_STREQ("{\"child\":{\"id\":1,\"revision\":8,\"task\":\"do something first\",\"parent\":null}}", m3.dump().c_str());
 
@@ -466,7 +476,7 @@ TEST(MapperTest, HasManyWithValue)
   Item item;
   HasMany<Item> children;
 
-  Mapper m("{\"revision\":5,\"id\":3,\"task\":\"do something\",\"children\":[{\"revision\":1,\"id\":1},{\"revision\":4,\"id\":7},{\"revision\":51,\"id\":3}]}", IGNORE_MISSING);
+  Mapper m("{\"revision\":5,\"id\":3,\"task\":\"do something\",\"children\":[{\"revision\":1,\"id\":1},{\"revision\":4,\"id\":7},{\"revision\":51,\"id\":3}]}", IGNORE_MISSING_FIELDS);
 
   m.get("id", item.id);
   m.get("revision", item.revision);

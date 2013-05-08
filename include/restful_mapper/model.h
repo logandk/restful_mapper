@@ -56,7 +56,7 @@ public:
 
   std::string read_field(const std::string &field) const
   {
-    Mapper mapper(SINGLE_FIELD | NO_CLEAN | FORCE_DIRTY);
+    Mapper mapper(OUTPUT_SINGLE_FIELD | KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG);
     mapper.set_field_filter(field);
     map_set(mapper);
 
@@ -65,7 +65,7 @@ public:
 
   bool is_dirty() const
   {
-    return to_json(NO_CLEAN).size() > 2;
+    return to_json(KEEP_FIELDS_DIRTY).size() > 2;
   }
 
   void reload()
@@ -83,7 +83,7 @@ public:
       Api::del(url());
 
       // Reload all attributes
-      from_json(to_json(FORCE_DIRTY), FORCE_DIRTY | IGNORE_MISSING);
+      from_json(to_json(IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
       const_cast<Primary &>(primary()).clear();
 
       exists_ = false;
@@ -94,11 +94,11 @@ public:
   {
     if (exists())
     {
-      from_json(Api::put(url(), to_json()), IGNORE_MISSING);
+      from_json(Api::put(url(), to_json()), IGNORE_MISSING_FIELDS);
     }
     else
     {
-      from_json(Api::post(url(), to_json()), IGNORE_MISSING);
+      from_json(Api::post(url(), to_json()), IGNORE_MISSING_FIELDS);
     }
   }
 
@@ -106,7 +106,7 @@ public:
   {
     T cloned;
 
-    cloned.from_json(to_json(NO_CLEAN | FORCE_DIRTY), FORCE_DIRTY | IGNORE_MISSING);
+    cloned.from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
 
     return cloned;
   }
