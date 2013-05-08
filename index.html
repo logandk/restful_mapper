@@ -4,40 +4,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>restful_mapper by logandk</title>
+
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/logandk/restful_mapper">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/logandk/restful_mapper/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/logandk/restful_mapper/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
-
     <div class="wrapper">
+      <header>
+        <h1>restful_mapper</h1>
+        <p>ORM for consuming RESTful APIs in C++</p>
 
+        <p class="view"><a href="https://github.com/logandk/restful_mapper">View the Project on GitHub <small>logandk/restful_mapper</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/logandk/restful_mapper/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/logandk/restful_mapper/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/logandk/restful_mapper">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
       <section>
-        <div id="title">
-          <h1>restful_mapper</h1>
-          <p>ORM for consuming RESTful APIs in C++</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/logandk">logandk</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
-
         <h1>restful_mapper</h1>
 
 <p>ORM for consuming RESTful APIs in C++</p>
@@ -204,7 +194,7 @@ environment variable or using the <code>set_proxy</code> method:</p>
     <span class="k">return</span> <span class="s">"/todo"</span><span class="p">;</span>
   <span class="p">}</span>
 
-  <span class="k">virtual</span> <span class="n">Primary</span> <span class="o">&amp;</span><span class="n">primary</span><span class="p">()</span>
+  <span class="k">virtual</span> <span class="k">const</span> <span class="n">Primary</span> <span class="o">&amp;</span><span class="n">primary</span><span class="p">()</span> <span class="k">const</span>
   <span class="p">{</span>
     <span class="k">return</span> <span class="n">id</span><span class="p">;</span>
   <span class="p">}</span>
@@ -255,7 +245,7 @@ Invoked upon requesting an object from the web service.</li>
 Specifies the API endpoint for this particular model. Relative to the web service
 root URL.</li>
 <li>
-<code>virtual Primary &amp;restful_mapper::Model::primary()</code><br>
+<code>virtual const Primary &amp;restful_mapper::Model::primary()</code> const<br>
 Specifies the primary key of the model.</li>
 </ul><h2>Working with objects</h2>
 
@@ -278,6 +268,15 @@ Specifies the primary key of the model.</li>
 
 <span class="c1">// Get all items in collection</span>
 <span class="n">Todo</span><span class="o">::</span><span class="n">Collection</span> <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find_all</span><span class="p">();</span>
+
+<span class="c1">// Find an item in the collection by id</span>
+<span class="n">todos</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+
+<span class="c1">// Find all items in collection where task is "Do something"</span>
+<span class="n">todos</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">"task"</span><span class="p">,</span> <span class="s">"Do something"</span><span class="p">);</span>
+
+<span class="c1">// Find the first item in collection that has been completed</span>
+<span class="n">todos</span><span class="p">.</span><span class="n">find_first</span><span class="p">(</span><span class="s">"completed"</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>
 
 <h3>Saving data</h3>
@@ -294,6 +293,10 @@ Specifies the primary key of the model.</li>
 
 <span class="c1">// Deleting an item</span>
 <span class="n">old_todo</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+
+<span class="c1">// Create a clone with no id set (i.e. a new database object)</span>
+<span class="n">Todo</span> <span class="n">todo_clone</span> <span class="o">=</span> <span class="n">old_todo</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+<span class="n">todo_clone</span><span class="p">.</span><span class="n">save</span><span class="p">();</span>
 </pre></div>
 
 <h3>Relationships</h3>
@@ -339,7 +342,27 @@ Specifies the primary key of the model.</li>
 <span class="n">Todo</span><span class="o">::</span><span class="n">Collection</span> <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">::</span><span class="n">find_all</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
 </pre></div>
 
-<h1>Contributing</h1>
+<h3>Exceptions</h3>
+
+<p>Some API errors are caught using custom exceptions.</p>
+
+<ul>
+<li>Internal <a href="http://curl.haxx.se/libcurl">libcurl</a> errors are represented as a <code>restful_mapper::ApiError</code>,
+which has adds a <code>code()</code> method to <code>std::runtime_error</code>.</li>
+<li>
+<code>restful_mapper::AuthenticationError</code> is thrown when authentication fails,
+and has the same properties as <code>restful_mapper::ApiError</code>.</li>
+<li>
+<code>restful_mapper::BadRequestError</code> is thrown when an error occurs on the API
+side, and has the same properties as <code>restful_mapper::ApiError</code>.</li>
+<li>
+<code>restful_mapper::ValidationError</code> is thrown when one or more validation
+errors are thrown by the API. It has the same properties as
+<code>restful_mapper::ApiError</code>, but adds an <code>errors()</code> method, which returns a
+<code>restful_mapper::ValidationError::FieldMap</code> map with field names as keys and
+error messages as values. This map may also be accessed directly through the
+overloaded <code>operator[]</code>.</li>
+</ul><h1>Contributing</h1>
 
 <p>Pull requests on <a href="http://github.com/logandk/restful_mapper">GitHub</a> are very welcome! Please try to follow these simple rules:</p>
 
@@ -353,9 +376,12 @@ Specifies the primary key of the model.</li>
 
 <p>For more information, see <a href="http://github.com/logandk/restful_mapper/blob/master/LICENSE"><code>LICENSE</code></a>.</p>
       </section>
-
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/logandk">logandk</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
     
   </body>
 </html>
