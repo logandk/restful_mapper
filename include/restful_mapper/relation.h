@@ -28,6 +28,8 @@ public:
 
       ModelCollection<T>::push_back(instance);
     }
+
+    clean();
   }
 
   std::string to_json(const int &flags = 0) const

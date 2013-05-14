@@ -111,6 +111,37 @@ public:
     return cloned;
   }
 
+  void reload_one(const std::string &relationship)
+  {
+    if (exists())
+    {
+      Json::Emitter emitter;
+
+      emitter.emit_map_open();
+      emitter.emit_json(relationship, Api::get(url(relationship)));
+      emitter.emit_map_close();
+
+      from_json(emitter.dump(), IGNORE_MISSING_FIELDS);
+    }
+  }
+
+  void reload_many(const std::string &relationship)
+  {
+    if (exists())
+    {
+      Json::Parser parser(Api::get(url(relationship)));
+
+      Json::Emitter emitter;
+
+      emitter.emit_map_open();
+      emitter.emit(relationship);
+      emitter.emit_tree(parser.find("objects").json_tree_ptr());
+      emitter.emit_map_close();
+
+      from_json(emitter.dump(), IGNORE_MISSING_FIELDS);
+    }
+  }
+
   static T find(const int &id)
   {
     T instance;
@@ -173,11 +204,16 @@ public:
     return objects;
   }
 
-  std::string url() const
+  std::string url(std::string nested_endpoint = "") const
   {
     if (exists())
     {
-      return endpoint() + "/" + std::string(primary());
+      if (!nested_endpoint.empty())
+      {
+        nested_endpoint = "/" + nested_endpoint;
+      }
+
+      return endpoint() + "/" + std::string(primary()) + nested_endpoint;
     }
     else
     {

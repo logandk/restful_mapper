@@ -158,6 +158,11 @@ public:
     operator std::map<std::string, double>() const { return to_double_map(); }
     operator std::map<std::string, bool>() const { return to_bool_map(); }
 
+    void *json_tree_ptr() const
+    {
+      return json_tree_ptr_;
+    }
+
   private:
     std::string name_;
     void *json_tree_ptr_;

@@ -605,3 +605,33 @@ TEST_F(ModelTest, Encoding)
   ASSERT_STREQ("Strange characters \xF8 here", string(t2.task).c_str());
 }
 
+TEST_F(ModelTest, ReloadOneRelated)
+{
+  Citizen c = Citizen::find(1);
+
+  ASSERT_TRUE(c.city->zipcode.is_null());
+
+  c.city.clear();
+  ASSERT_TRUE(c.city.is_dirty());
+
+  c.reload_one("city");
+
+  ASSERT_FALSE(c.city->zipcode.is_null());
+  ASSERT_FALSE(c.city.is_dirty());
+}
+
+TEST_F(ModelTest, ReloadManyRelated)
+{
+  Country c = Country::find(1);
+
+  ASSERT_TRUE(c.cities[0].zipcode.is_null());
+
+  c.cities.clear();
+  ASSERT_TRUE(c.cities.is_dirty());
+
+  c.reload_many("cities");
+
+  ASSERT_FALSE(c.cities[0].zipcode.is_null());
+  ASSERT_FALSE(c.cities.is_dirty());
+}
+
