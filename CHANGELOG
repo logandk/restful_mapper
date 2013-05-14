@@ -8,6 +8,7 @@ Version 0.2.0-dev
 	* Merged all JSON code into a single module
 	* Use long long for primary keys
 	* Support long long fields
+	* Added `reload_one` and `reload_many` methods to `Model`
 
 Version 0.1.2
 	* First release
