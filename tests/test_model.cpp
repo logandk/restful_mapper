@@ -635,3 +635,15 @@ TEST_F(ModelTest, ReloadManyRelated)
   ASSERT_FALSE(c.cities.is_dirty());
 }
 
+TEST_F(ModelTest, Comparison)
+{
+  Country c1_1 = Country::find(1);
+  Country c1_2 = Country::find(1);
+
+  Country c2_1 = Country::find(2);
+
+  ASSERT_TRUE(c1_1 == c1_2);
+  ASSERT_FALSE(c1_1 == c2_1);
+  ASSERT_TRUE(c1_2 != c2_1);
+}
+

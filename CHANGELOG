@@ -9,6 +9,7 @@ Version 0.2.0-dev
 	* Use long long for primary keys
 	* Support long long fields
 	* Added `reload_one` and `reload_many` methods to `Model`
+	* Added comparison operators on `Model`
 
 Version 0.1.2
 	* First release

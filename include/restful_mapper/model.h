@@ -226,6 +226,17 @@ public:
     return exists_;
   }
 
+  bool operator==(const T &other) const
+  {
+    return to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG) ==
+      other.to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG);
+  }
+
+  bool operator!=(const T &other) const
+  {
+    return !(*this == other);
+  }
+
 protected:
   bool exists_;
 };
