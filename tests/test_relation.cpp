@@ -89,6 +89,11 @@ TEST(RelationTest, HasOne)
 
   r->id = 3;
   ASSERT_EQ(8, r2.get().id);
+
+  HasOne<Task> r3;
+  HasOne<Task> r4;
+
+  ASSERT_NO_THROW(r4 = r3);
 }
 
 TEST(RelationTest, HasMany)

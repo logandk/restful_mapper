@@ -220,7 +220,17 @@ public:
 
   const HasOne &operator=(const HasOne &value)
   {
-    set(value.get());
+    if (value.is_null())
+    {
+      clear();
+    }
+    else
+    {
+      set(value.get());
+    }
+
+    is_dirty_ = value.is_dirty_;
+
     return *this;
   }
 
