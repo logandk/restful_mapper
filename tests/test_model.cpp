@@ -453,6 +453,11 @@ TEST_F(ModelTest, CollectionFind)
   ASSERT_STREQ("???", t2.task.c_str());
 
   ASSERT_THROW(todos.find_first("priority", 5), out_of_range);
+
+  ASSERT_TRUE(todos.contains("completed", false));
+  ASSERT_FALSE(todos.contains("priority", 5));
+  ASSERT_TRUE(todos.contains(3));
+  ASSERT_FALSE(todos.contains(5));
 }
 
 TEST_F(ModelTest, GetHasOne)

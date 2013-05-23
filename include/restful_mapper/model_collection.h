@@ -57,7 +57,7 @@ public:
 
   const T &find(const int &id) const
   {
-      return find((long long) id);
+    return find((long long) id);
   }
 
   ModelCollection<T> find(const std::string &field, const int &value) const
@@ -148,6 +148,53 @@ public:
   const T &find_first(const std::string &field, const char *value) const
   {
     return find_first_by_field(field, Json::encode(value));
+  }
+
+  bool contains(const long long &id) const
+  {
+    const_iterator i, i_end = end();
+
+    for (i = begin(); i != i_end; ++i)
+    {
+      if (i->primary() == id) return true;
+    }
+
+    return false;
+  }
+
+  bool contains(const int &id) const
+  {
+    return contains((long long) id);
+  }
+
+  bool contains(const std::string &field, const int &value) const
+  {
+    return contains_by_field(field, Json::encode(value));
+  }
+
+  bool contains(const std::string &field, const long long &value) const
+  {
+    return contains_by_field(field, Json::encode(value));
+  }
+
+  bool contains(const std::string &field, const double &value) const
+  {
+    return contains_by_field(field, Json::encode(value));
+  }
+
+  bool contains(const std::string &field, const bool &value) const
+  {
+    return contains_by_field(field, Json::encode(value));
+  }
+
+  bool contains(const std::string &field, const std::string &value) const
+  {
+    return contains_by_field(field, Json::encode(value));
+  }
+
+  bool contains(const std::string &field, const char *value) const
+  {
+    return contains_by_field(field, Json::encode(value));
   }
 
   // Reimplement std::vector for convenience
@@ -241,6 +288,18 @@ private:
     std::ostringstream s;
     s << "Cannot find " << typeid(T).name() << " with " << field << " " << json_value;
     throw std::out_of_range(s.str());
+  }
+
+  bool contains_by_field(const std::string &field, const std::string &json_value) const
+  {
+    const_iterator i, i_end = end();
+
+    for (i = begin(); i != i_end; ++i)
+    {
+      if (i->read_field(field) == json_value) return true;
+    }
+
+    return false;
   }
 };
 
