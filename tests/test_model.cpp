@@ -629,6 +629,8 @@ TEST_F(ModelTest, ReloadManyRelated)
 {
   Country c = Country::find(1);
 
+  ASSERT_EQ(1, c.id.get());
+  ASSERT_STREQ("Denmark", c.name.c_str());
   ASSERT_TRUE(c.cities[0].zipcode.is_null());
 
   c.cities.clear();
@@ -638,6 +640,13 @@ TEST_F(ModelTest, ReloadManyRelated)
 
   ASSERT_FALSE(c.cities[0].zipcode.is_null());
   ASSERT_FALSE(c.cities.is_dirty());
+
+  ASSERT_EQ(1, c.id.get());
+  ASSERT_STREQ("Denmark", c.name.c_str());
+  ASSERT_FALSE(c.id.is_null());
+  ASSERT_FALSE(c.id.is_dirty());
+  ASSERT_FALSE(c.name.is_null());
+  ASSERT_FALSE(c.name.is_dirty());
 }
 
 TEST_F(ModelTest, Comparison)

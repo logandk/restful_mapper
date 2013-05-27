@@ -192,6 +192,8 @@ public:
     {
       Json::Node node = parser_.find(key);
 
+      attr = Primary();
+
       if (node.is_null())
       {
         attr.clear(true);

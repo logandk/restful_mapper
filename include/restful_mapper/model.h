@@ -38,8 +38,6 @@ public:
 
   void from_json(std::string values, const int &flags = 0)
   {
-    const_cast<Primary &>(primary()) = Primary(); // Reset primary
-
     Mapper mapper(values, flags);
     map_get(mapper);
 
@@ -84,6 +82,9 @@ public:
 
       // Reload all attributes
       from_json(to_json(IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
+
+      // Reset and clear primary
+      const_cast<Primary &>(primary()) = Primary();
       const_cast<Primary &>(primary()).clear();
 
       exists_ = false;
