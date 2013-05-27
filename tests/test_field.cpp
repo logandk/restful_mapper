@@ -16,7 +16,7 @@ TEST(FieldTest, IntField)
 
   ASSERT_TRUE(f.is_null());
   ASSERT_FALSE(f.is_dirty());
-  ASSERT_THROW(int x = f, runtime_error);
+  ASSERT_EQ(0, (int) f);
 
   f = 5;
 
@@ -51,7 +51,7 @@ TEST(FieldTest, BoolField)
   ASSERT_TRUE(bool(f));
   ASSERT_TRUE(f);
 
-  f = false;
+  f.clear();
 
   ASSERT_FALSE(bool(f));
   ASSERT_FALSE(f);
@@ -76,6 +76,8 @@ TEST(FieldTest, StringField)
   ASSERT_STREQ("Lorem ipsum", string(f).c_str());
 
   f.clear();
+
+  ASSERT_STREQ("", string(f).c_str());
 
   ASSERT_TRUE(f.is_null());
   ASSERT_TRUE(f.is_dirty());

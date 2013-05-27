@@ -18,13 +18,6 @@ public:
 
   virtual const T &get() const
   {
-    if (is_null())
-    {
-      std::ostringstream s;
-      s << "Cannot convert null field to " << type_info_name(typeid(T));
-      throw std::runtime_error(s.str());
-    }
-
     return value_;
   }
 
