@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <restful_mapper/helpers.h>
 #include <restful_mapper/json.h>
 
 namespace restful_mapper
@@ -32,7 +33,7 @@ public:
     }
 
     std::ostringstream s;
-    s << "Cannot find " << typeid(T).name() << " with id " << id;
+    s << "Cannot find " << type_info_name(typeid(T)) << " with id " << id;
     throw std::out_of_range(s.str());
   }
 
@@ -51,7 +52,7 @@ public:
     }
 
     std::ostringstream s;
-    s << "Cannot find " << typeid(T).name() << " with id " << id;
+    s << "Cannot find " << type_info_name(typeid(T)) << " with id " << id;
     throw std::out_of_range(s.str());
   }
 
@@ -272,7 +273,7 @@ private:
     }
 
     std::ostringstream s;
-    s << "Cannot find " << typeid(T).name() << " with " << field << " " << json_value;
+    s << "Cannot find " << type_info_name(typeid(T)) << " with " << field << " " << json_value;
     throw std::out_of_range(s.str());
   }
 
@@ -286,7 +287,7 @@ private:
     }
 
     std::ostringstream s;
-    s << "Cannot find " << typeid(T).name() << " with " << field << " " << json_value;
+    s << "Cannot find " << type_info_name(typeid(T)) << " with " << field << " " << json_value;
     throw std::out_of_range(s.str());
   }
 

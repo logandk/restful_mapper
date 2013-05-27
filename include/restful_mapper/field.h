@@ -2,10 +2,10 @@
 #define RESTFUL_MAPPER_FIELD_H
 
 #include <restful_mapper/api.h>
+#include <restful_mapper/helpers.h>
 #include <restful_mapper/internal/iso8601.h>
 #include <cstdio>
 #include <sstream>
-#include <typeinfo>
 
 namespace restful_mapper
 {
@@ -18,6 +18,13 @@ public:
 
   virtual const T &get() const
   {
+    if (is_null())
+    {
+      std::ostringstream s;
+      s << "Cannot convert null field to " << type_info_name(typeid(T));
+      throw std::runtime_error(s.str());
+    }
+
     return value_;
   }
 
@@ -88,9 +95,9 @@ class Field : public FieldBase<T>
 {
 public:
   // Inherit from FieldBase
-  Field() : FieldBase<T>() {}
+  Field() : FieldBase<T>() { this->value_ = 0; }
   const T &operator=(const T &value) { return FieldBase<T>::operator=(value); }
-  virtual std::string name() { return typeid(T).name(); }
+  virtual std::string name() { return type_info_name(typeid(T)); }
 };
 
 template <>
@@ -100,7 +107,7 @@ public:
   // Inherit from FieldBase
   Field() : FieldBase<std::string>() {}
   const std::string &operator=(const std::string &value) { return FieldBase<std::string>::operator=(value); }
-  virtual std::string name() { return typeid(std::string).name(); }
+  virtual std::string name() { return type_info_name(typeid(std::string)); }
 
   void clear(const bool &keep_clean = false)
   {
@@ -250,9 +257,9 @@ class Field<std::time_t> : public FieldBase<std::time_t>
 {
 public:
   // Inherit from FieldBase
-  Field() : FieldBase<std::time_t>() {}
+  Field() : FieldBase<std::time_t>() { this->value_ = 0; }
   const std::time_t &operator=(const std::time_t &value) { return FieldBase<std::time_t>::operator=(value); }
-  virtual std::string name() { return typeid(std::time_t).name(); }
+  virtual std::string name() { return type_info_name(typeid(std::time_t)); }
 
   const std::time_t &set(const std::string &value, const bool &keep_clean = false)
   {
@@ -379,8 +386,8 @@ class Primary : public FieldBase<long long>
 {
 public:
   // Inherit from FieldBase
-  Primary() : FieldBase<long long>(), is_assigned_(false) {}
-  virtual std::string name() { return typeid(long long).name(); }
+  Primary() : FieldBase<long long>(), is_assigned_(false) { this->value_ = 0; }
+  virtual std::string name() { return type_info_name(typeid(long long)); }
 
   operator std::string() const
   {

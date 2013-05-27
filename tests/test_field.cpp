@@ -16,6 +16,7 @@ TEST(FieldTest, IntField)
 
   ASSERT_TRUE(f.is_null());
   ASSERT_FALSE(f.is_dirty());
+  ASSERT_THROW(int x = f, runtime_error);
 
   f = 5;
 
@@ -50,7 +51,7 @@ TEST(FieldTest, BoolField)
   ASSERT_TRUE(bool(f));
   ASSERT_TRUE(f);
 
-  f.clear();
+  f = false;
 
   ASSERT_FALSE(bool(f));
   ASSERT_FALSE(f);
@@ -78,8 +79,6 @@ TEST(FieldTest, StringField)
 
   ASSERT_TRUE(f.is_null());
   ASSERT_TRUE(f.is_dirty());
-
-  ASSERT_STREQ("", string(f).c_str());
 
   f.set("Something else...");
 

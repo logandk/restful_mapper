@@ -18,22 +18,22 @@ public:
 
   virtual void map_set(Mapper &mapper) const
   {
-    throw std::logic_error(std::string("map_set not implemented for ") + typeid(T).name());
+    throw std::logic_error(std::string("map_set not implemented for ") + type_info_name(typeid(T)));
   }
 
   virtual void map_get(const Mapper &mapper)
   {
-    throw std::logic_error(std::string("map_get not implemented for ") + typeid(T).name());
+    throw std::logic_error(std::string("map_get not implemented for ") + type_info_name(typeid(T)));
   }
 
   virtual std::string endpoint() const
   {
-    throw std::logic_error(std::string("endpoint not implemented for ") + typeid(T).name());
+    throw std::logic_error(std::string("endpoint not implemented for ") + type_info_name(typeid(T)));
   }
 
   virtual const Primary &primary() const
   {
-    throw std::logic_error(std::string("primary not implemented for ") + typeid(T).name());
+    throw std::logic_error(std::string("primary not implemented for ") + type_info_name(typeid(T)));
   }
 
   void from_json(std::string values, const int &flags = 0)

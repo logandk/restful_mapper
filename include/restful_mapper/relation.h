@@ -242,7 +242,9 @@ private:
   {
     if (!item_)
     {
-      throw std::runtime_error(std::string("Related object \"") + typeid(T).name() + "\" does not exist");
+      std::ostringstream s;
+      s << "Related object \"" << type_info_name(typeid(T)) << "\" does not exist";
+      throw std::runtime_error(s.str());
     }
   }
 };
