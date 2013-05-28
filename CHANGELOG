@@ -11,6 +11,8 @@ Version 0.2.0-dev
 	* Added `reload_one` and `reload_many` methods to `Model`
 	* Added comparison operators on `Model`
 	* Added `contains` methods on model collection
+	* Limit `Field` template class to support only pre-specified types
+	* Added proper support for copying null values between fields
 
 Version 0.1.2
 	* First release
