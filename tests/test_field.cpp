@@ -31,6 +31,8 @@ TEST(FieldTest, DoubleField)
 {
   Field<double> f;
 
+  ASSERT_DOUBLE_EQ(0.0, f.get());
+
   f = 5.45;
 
   ASSERT_FLOAT_EQ(5.45, float(f));
@@ -46,6 +48,8 @@ TEST(FieldTest, BoolField)
 {
   Field<bool> f;
 
+  ASSERT_FALSE(f.get());
+
   f = true;
 
   ASSERT_TRUE(bool(f));
@@ -60,6 +64,8 @@ TEST(FieldTest, BoolField)
 TEST(FieldTest, StringField)
 {
   Field<string> f;
+
+  ASSERT_STREQ("", string(f).c_str());
 
   ASSERT_TRUE(f.is_null());
   ASSERT_FALSE(f.is_dirty());
@@ -344,5 +350,40 @@ TEST(FieldTest, Stream)
   s << f2;
 
   ASSERT_STREQ("flaf3.1", s.str().c_str());
+}
+
+TEST(FieldTest, FieldAssignment)
+{
+  Field<long long> f1;
+  Field<int> f2;
+  Field<bool> f3;
+  Field<bool> f4;
+  Field<double> f5;
+  Field<double> f6;
+  Primary f7;
+  Primary f8;
+
+  ASSERT_TRUE(f1.is_null());
+  ASSERT_TRUE(f2.is_null());
+
+  f1 = f2;
+
+  ASSERT_TRUE(f1.is_null());
+  ASSERT_TRUE(f2.is_null());
+
+  f2 = f1;
+
+  ASSERT_TRUE(f1.is_null());
+  ASSERT_TRUE(f2.is_null());
+
+  f3 = f4;
+  f5 = f6;
+
+  ASSERT_TRUE(f3.is_null());
+  ASSERT_TRUE(f5.is_null());
+
+  f7 = f8;
+
+  ASSERT_TRUE(f7.is_null());
 }
 

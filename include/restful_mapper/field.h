@@ -33,12 +33,6 @@ public:
     return value_ = value;
   }
 
-  virtual void clear(const bool &keep_clean = false)
-  {
-    set(0, keep_clean);
-    is_null_ = true;
-  }
-
   virtual void touch() const
   {
     is_dirty_ = true;
@@ -48,6 +42,8 @@ public:
   {
     is_dirty_ = false;
   }
+
+  virtual void clear(const bool &keep_clean = false) = 0;
 
   virtual const bool &is_dirty() const
   {
@@ -66,15 +62,17 @@ public:
     return get();
   }
 
-  const T &operator=(const T &value)
-  {
-    return set(value);
-  }
-
 protected:
   T value_;
   mutable bool is_dirty_;
   bool is_null_;
+
+  virtual void clear_(const T &null_value, const bool &keep_clean = false)
+  {
+    set(null_value, keep_clean);
+    is_null_ = true;
+  }
+
 };
 
 template <class T>
@@ -84,13 +82,56 @@ std::ostream &operator<<(std::ostream &out, const FieldBase<T> &field)
 }
 
 template <class T>
-class Field : public FieldBase<T>
+class Field : public FieldBase<T> {};
+
+template <>
+class Field<bool> : public FieldBase<bool>
 {
 public:
   // Inherit from FieldBase
-  Field() : FieldBase<T>() { this->value_ = 0; }
-  const T &operator=(const T &value) { return FieldBase<T>::operator=(value); }
-  virtual std::string name() { return type_info_name(typeid(T)); }
+  Field() : FieldBase<bool>() { value_ = false; }
+  const bool &operator=(const bool &value) { return set(value); }
+  const Field<bool> &operator=(const FieldBase<bool> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  virtual std::string name() { return type_info_name(typeid(bool)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(false, keep_clean); };
+};
+
+template <>
+class Field<int> : public FieldBase<int>
+{
+public:
+  // Inherit from FieldBase
+  Field() : FieldBase<int>() { value_ = 0; }
+  const int &operator=(const int &value) { return set(value); }
+  const Field<int> &operator=(const FieldBase<int> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  const Field<int> &operator=(const FieldBase<long long> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  virtual std::string name() { return type_info_name(typeid(int)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(0, keep_clean); };
+};
+
+template <>
+class Field<long long> : public FieldBase<long long>
+{
+public:
+  // Inherit from FieldBase
+  Field() : FieldBase<long long>() { value_ = 0; }
+  const long long &operator=(const long long &value) { return set(value); }
+  const Field<long long> &operator=(const FieldBase<long long> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  const Field<long long> &operator=(const FieldBase<int> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  virtual std::string name() { return type_info_name(typeid(long long)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(0, keep_clean); };
+};
+
+template <>
+class Field<double> : public FieldBase<double>
+{
+public:
+  // Inherit from FieldBase
+  Field() : FieldBase<double>() { value_ = 0.0; }
+  const double &operator=(const double &value) { return set(value); }
+  const Field<double> &operator=(const FieldBase<double> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  virtual std::string name() { return type_info_name(typeid(double)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(0.0, keep_clean); };
 };
 
 template <>
@@ -98,15 +139,11 @@ class Field<std::string> : public FieldBase<std::string>
 {
 public:
   // Inherit from FieldBase
-  Field() : FieldBase<std::string>() {}
-  const std::string &operator=(const std::string &value) { return FieldBase<std::string>::operator=(value); }
+  Field() : FieldBase<std::string>() { value_ = ""; }
+  const std::string &operator=(const std::string &value) { return set(value); }
+  const Field<std::string> &operator=(const FieldBase<std::string> &value) { set(value); is_null_ = value.is_null(); return *this; }
   virtual std::string name() { return type_info_name(typeid(std::string)); }
-
-  void clear(const bool &keep_clean = false)
-  {
-    set("", keep_clean);
-    is_null_ = true;
-  }
+  virtual void clear(const bool &keep_clean = false) { clear_("", keep_clean); };
 
   // Reimplement std::string
   typedef std::string::value_type             value_type;
@@ -250,9 +287,11 @@ class Field<std::time_t> : public FieldBase<std::time_t>
 {
 public:
   // Inherit from FieldBase
-  Field() : FieldBase<std::time_t>() { this->value_ = 0; }
-  const std::time_t &operator=(const std::time_t &value) { return FieldBase<std::time_t>::operator=(value); }
+  Field() : FieldBase<std::time_t>() { value_ = 0; }
+  const std::time_t &operator=(const std::time_t &value) { return set(value); }
+  const Field<std::time_t> &operator=(const FieldBase<std::time_t> &value) { set(value); is_null_ = value.is_null(); return *this; }
   virtual std::string name() { return type_info_name(typeid(std::time_t)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(0, keep_clean); };
 
   const std::time_t &set(const std::string &value, const bool &keep_clean = false)
   {
@@ -379,8 +418,10 @@ class Primary : public FieldBase<long long>
 {
 public:
   // Inherit from FieldBase
-  Primary() : FieldBase<long long>(), is_assigned_(false) { this->value_ = 0; }
+  Primary() : FieldBase<long long>(), is_assigned_(false) { value_ = 0; }
+  const long long &operator=(const long long &value) { return set(value); }
   virtual std::string name() { return type_info_name(typeid(long long)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(0, keep_clean); };
 
   operator std::string() const
   {
@@ -398,11 +439,6 @@ public:
 
     is_assigned_ = true;
     return FieldBase<long long>::set(value, keep_clean);
-  }
-
-  const long long &operator=(const long long &value)
-  {
-    return set(value);
   }
 
 protected:
