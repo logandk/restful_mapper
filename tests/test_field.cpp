@@ -385,5 +385,11 @@ TEST(FieldTest, FieldAssignment)
   f7 = f8;
 
   ASSERT_TRUE(f7.is_null());
+
+  f1 = f8;
+  f2 = f7;
+
+  ASSERT_TRUE(f1.is_null());
+  ASSERT_TRUE(f2.is_null());
 }
 
