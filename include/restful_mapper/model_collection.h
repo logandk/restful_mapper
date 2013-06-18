@@ -23,6 +23,19 @@ public:
     return items_;
   }
 
+  ModelCollection<T> clone() const
+  {
+    ModelCollection<T> cloned_list;
+    const_iterator i, i_end = end();
+
+    for (i = begin(); i != i_end; ++i)
+    {
+      cloned_list.push_back(i->clone());
+    }
+
+    return cloned_list;
+  }
+
   T &find(const long long &id)
   {
     iterator i, i_end = end();

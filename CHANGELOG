@@ -14,6 +14,7 @@ Version 0.2.0-dev
 	* Limit `Field` template class to support only pre-specified types
 	* Added proper support for copying null values between fields
 	* Added `emplace_clone` method for in-place cloning of models
+	* Added `clone` method for model collections
 
 Version 0.1.2
 	* First release

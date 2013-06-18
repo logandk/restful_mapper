@@ -85,10 +85,7 @@ public:
       Api::del(url());
 
       // Reload all attributes
-      from_json(to_json(IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
-      reset_primary_key();
-
-      exists_ = false;
+      emplace_clone();
     }
   }
 
@@ -110,14 +107,17 @@ public:
   {
     T cloned;
 
-    cloned.from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
+    cloned.from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG | OUTPUT_SHALLOW),
+        TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
 
     return cloned;
   }
 
   void emplace_clone()
   {
-    from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS, false);
+    from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG | OUTPUT_SHALLOW),
+        TOUCH_FIELDS | IGNORE_MISSING_FIELDS, false);
+
     reset_primary_key();
   }
 

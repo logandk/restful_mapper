@@ -379,6 +379,35 @@ TEST_F(ModelTest, CloneItem)
   t3.save();
 
   ASSERT_EQ(4, int(t3.id));
+
+  City c = City::find(1).clone();
+
+  ASSERT_TRUE(c.name.is_dirty());
+  ASSERT_TRUE(c.country_id.is_dirty());
+  ASSERT_TRUE(c.country.is_null());
+  ASSERT_TRUE(c.citizens.empty());
+
+  c.save();
+
+  City c3 = City::find(4);
+
+  ASSERT_EQ(0, c3.citizens.size());
+  ASSERT_STREQ("Copenhagen", c3.name.c_str());
+  ASSERT_STREQ("Denmark", c3.country->name.c_str());
+}
+
+TEST_F(ModelTest, CloneCollection)
+{
+  City c = City::find(1);
+
+  Citizen::Collection new_citizens = c.citizens.clone();
+
+  ASSERT_EQ(2, new_citizens.size());
+  ASSERT_FALSE(new_citizens[0].exists());
+  ASSERT_FALSE(new_citizens[1].exists());
+  ASSERT_STREQ("Jane", new_citizens[1].first_name.c_str());
+  ASSERT_EQ(1, new_citizens[0].city_id.get());
+  ASSERT_TRUE(new_citizens[0].id.is_null());
 }
 
 TEST_F(ModelTest, EmplaceClone)

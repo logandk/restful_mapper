@@ -15,7 +15,8 @@ enum MapperConfig
   IGNORE_DIRTY_FLAG     = 4,  // Include non-dirty fields in output
   TOUCH_FIELDS          = 8,  // Touch fields after reading input
   KEEP_FIELDS_DIRTY     = 16, // Do not clean fields after outputting
-  OUTPUT_SINGLE_FIELD   = 32  // Output only a single field (set in field_filter_)
+  OUTPUT_SINGLE_FIELD   = 32, // Output only a single field (set in field_filter_)
+  OUTPUT_SHALLOW        = 64  // Do not recurse into relationships
 };
 
 class Mapper
@@ -233,11 +234,12 @@ public:
   {
     if (parser_.empty(key)) return;
 
-    attr.from_json(get(key), flags_ | INCLUDE_PRIMARY_KEY);
+    attr.from_json(get(key), (flags_ | INCLUDE_PRIMARY_KEY) & ~TOUCH_FIELDS);
   }
 
   template <class T> void set(const char *key, const HasOne<T> &attr)
   {
+    if (should_output_shallow()) return;
     if (should_output_single_field() && field_filter_ != key) return;
     if (!should_ignore_dirty_flag() && !attr.is_dirty()) return;
 
@@ -250,11 +252,12 @@ public:
   {
     if (parser_.empty(key)) return;
 
-    attr.from_json(get(key), flags_ | INCLUDE_PRIMARY_KEY);
+    attr.from_json(get(key), (flags_ | INCLUDE_PRIMARY_KEY) & ~TOUCH_FIELDS);
   }
 
   template <class T> void set(const char *key, const HasMany<T> &attr)
   {
+    if (should_output_shallow()) return;
     if (should_output_single_field() && field_filter_ != key) return;
     if (!should_ignore_dirty_flag() && !attr.is_dirty()) return;
 
@@ -298,6 +301,11 @@ private:
   inline bool should_output_single_field() const
   {
     return (flags_ & OUTPUT_SINGLE_FIELD) == OUTPUT_SINGLE_FIELD;
+  }
+
+  inline bool should_output_shallow() const
+  {
+    return (flags_ & OUTPUT_SHALLOW) == OUTPUT_SHALLOW;
   }
 };
 
