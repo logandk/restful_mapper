@@ -360,6 +360,7 @@ TEST_F(ModelTest, CloneItem)
 
   Todo t3 = t.clone();
 
+  ASSERT_FALSE(t3.exists());
   ASSERT_TRUE(t3.id.is_null());
   ASSERT_STREQ("???", string(t3.task).c_str());
   ASSERT_EQ(2, int(t3.priority));
@@ -372,6 +373,53 @@ TEST_F(ModelTest, CloneItem)
   ASSERT_EQ(53, t3.completed_on.utc_minute());
   ASSERT_EQ(21, t3.completed_on.utc_second());
   ASSERT_STREQ("2013-03-13T11:53:21Z", string(t3.completed_on).c_str());
+  ASSERT_TRUE(t3.priority.is_dirty());
+  ASSERT_TRUE(t3.completed_on.is_dirty());
+
+  t3.save();
+
+  ASSERT_EQ(4, int(t3.id));
+}
+
+TEST_F(ModelTest, EmplaceClone)
+{
+  Todo t = Todo::find(2);
+
+  ASSERT_FALSE(t.priority.is_dirty());
+  ASSERT_FALSE(t.completed_on.is_dirty());
+
+  t.emplace_clone();
+
+  ASSERT_TRUE(t.priority.is_dirty());
+  ASSERT_TRUE(t.completed_on.is_dirty());
+
+  ASSERT_FALSE(t.exists());
+  ASSERT_TRUE(t.id.is_null());
+  ASSERT_STREQ("???", string(t.task).c_str());
+  ASSERT_EQ(2, int(t.priority));
+  ASSERT_DOUBLE_EQ(4.54, double(t.time));
+  ASSERT_FALSE(bool(t.completed));
+  ASSERT_EQ(2013, t.completed_on.utc_year());
+  ASSERT_EQ(3, t.completed_on.utc_month());
+  ASSERT_EQ(13, t.completed_on.utc_day());
+  ASSERT_EQ(11, t.completed_on.utc_hour());
+  ASSERT_EQ(53, t.completed_on.utc_minute());
+  ASSERT_EQ(21, t.completed_on.utc_second());
+  ASSERT_STREQ("2013-03-13T11:53:21Z", string(t.completed_on).c_str());
+
+  t.save();
+
+  ASSERT_EQ(4, int(t.id));
+
+  City c = City::find(1);
+  c.emplace_clone();
+
+  ASSERT_FALSE(c.citizens.empty());
+  ASSERT_EQ(2, c.citizens.size());
+  ASSERT_STREQ("Jane", c.citizens[1].first_name.c_str());
+  ASSERT_EQ(1, c.citizens[0].city_id.get());
+  ASSERT_EQ(1, c.citizens[0].id.get());
+  ASSERT_TRUE(c.citizens[1].exists());
 }
 
 TEST_F(ModelTest, DeleteItem)

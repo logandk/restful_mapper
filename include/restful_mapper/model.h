@@ -40,8 +40,12 @@ public:
   {
     Mapper mapper(values, flags);
     map_get(mapper);
+  }
 
-    exists_ = true;
+  void from_json(std::string values, const int &flags, const bool &exists)
+  {
+    from_json(values, flags);
+    exists_ = exists;
   }
 
   std::string to_json(const int &flags = 0) const
@@ -82,10 +86,7 @@ public:
 
       // Reload all attributes
       from_json(to_json(IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
-
-      // Reset and clear primary
-      const_cast<Primary &>(primary()) = Primary();
-      const_cast<Primary &>(primary()).clear();
+      reset_primary_key();
 
       exists_ = false;
     }
@@ -101,6 +102,8 @@ public:
     {
       from_json(Api::post(url(), to_json()), IGNORE_MISSING_FIELDS);
     }
+
+    exists_ = true;
   }
 
   virtual T clone() const
@@ -110,6 +113,12 @@ public:
     cloned.from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS);
 
     return cloned;
+  }
+
+  void emplace_clone()
+  {
+    from_json(to_json(KEEP_FIELDS_DIRTY | IGNORE_DIRTY_FLAG), TOUCH_FIELDS | IGNORE_MISSING_FIELDS, false);
+    reset_primary_key();
   }
 
   void reload_one(const std::string &relationship)
@@ -147,8 +156,8 @@ public:
   {
     T instance;
     const_cast<Primary &>(instance.primary()).set(id, true);
-
     instance.exists_ = true;
+
     instance.reload();
 
     return instance;
@@ -166,7 +175,7 @@ public:
     for (i = partials.begin(); i != i_end; ++i)
     {
       T instance;
-      instance.from_json(*i);
+      instance.from_json(*i, 0, true);
 
       objects.push_back(instance);
     }
@@ -179,7 +188,7 @@ public:
     T instance;
 
     std::string url = Api::query_param(instance.url(), "q", query.single().dump());
-    instance.from_json(Api::get(url));
+    instance.from_json(Api::get(url), 0, true);
 
     return instance;
   }
@@ -197,7 +206,7 @@ public:
     for (i = partials.begin(); i != i_end; ++i)
     {
       T instance;
-      instance.from_json(*i);
+      instance.from_json(*i, 0, true);
 
       objects.push_back(instance);
     }
@@ -240,6 +249,13 @@ public:
 
 protected:
   bool exists_;
+
+  void reset_primary_key()
+  {
+    // Reset and clear primary
+    const_cast<Primary &>(primary()) = Primary();
+    const_cast<Primary &>(primary()).clear();
+  }
 };
 
 }

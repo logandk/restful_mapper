@@ -13,6 +13,7 @@ Version 0.2.0-dev
 	* Added `contains` methods on model collection
 	* Limit `Field` template class to support only pre-specified types
 	* Added proper support for copying null values between fields
+	* Added `emplace_clone` method for in-place cloning of models
 
 Version 0.1.2
 	* First release

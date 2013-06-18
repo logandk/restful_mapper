@@ -17,7 +17,7 @@ public:
   int id;
   string task;
 
-  void from_json(string values, const int &flags = 0)
+  void from_json(string values, const int &flags = 0, const bool &exists = false)
   {
   }
 

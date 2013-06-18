@@ -18,7 +18,7 @@ public:
   Field<string> task;
   HasOne<Item> parent;
 
-  void from_json(string values, const int &flags = 0)
+  void from_json(string values, const int &flags = 0, const bool &exists = false)
   {
     Mapper m(values, flags);
 

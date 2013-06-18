@@ -24,7 +24,7 @@ public:
     for (i = partials.begin(); i != i_end; ++i)
     {
       T instance;
-      instance.from_json(*i, flags);
+      instance.from_json(*i, flags, true);
 
       ModelCollection<T>::push_back(instance);
     }
@@ -184,7 +184,7 @@ public:
     build();
     clean();
 
-    item_->from_json(values, flags);
+    item_->from_json(values, flags, true);
   }
 
   std::string to_json(const int &flags = 0) const
