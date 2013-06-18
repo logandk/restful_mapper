@@ -260,7 +260,7 @@ public:
   void clear() { items_.clear(); }
   allocator_type get_allocator() const { return items_.get_allocator(); }
 
-private:
+protected:
   std::vector<T> items_;
 
   ModelCollection<T> find_by_field(const std::string &field, const std::string &json_value) const

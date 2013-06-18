@@ -68,9 +68,22 @@ public:
     return is_dirty_;
   }
 
+  void touch()
+  {
+    is_dirty_ = true;
+  }
+
   void clean() const
   {
     is_dirty_ = false;
+  }
+
+  const HasMany<T> &operator=(const ModelCollection<T> &other)
+  {
+    this->items_ = other.items();
+    touch();
+
+    return *this;
   }
 
   // Inherit typedefs
@@ -87,18 +100,18 @@ public:
   typedef typename ModelCollection<T>::difference_type difference_type;
   typedef typename ModelCollection<T>::size_type size_type;
 
-  void resize(size_type n, value_type val = value_type()) { is_dirty_ = true; ModelCollection<T>::resize(n, val); }
-  template <class InputIterator> void assign(InputIterator first, InputIterator last) { is_dirty_ = true; ModelCollection<T>::assign(first, last); }
-  void assign(size_type n, const value_type val) { is_dirty_ = true; ModelCollection<T>::assign(n, val); }
-  void push_back(const value_type val) { is_dirty_ = true; ModelCollection<T>::push_back(val); }
-  void pop_back() { is_dirty_ = true; ModelCollection<T>::pop_back(); }
-  iterator insert(iterator position, const value_type val) { is_dirty_ = true; return ModelCollection<T>::insert(position, val); }
-  void insert(iterator position, size_type n, const value_type val) { is_dirty_ = true; ModelCollection<T>::insert(position, n, val); }
-  template <class InputIterator> void insert(iterator position, InputIterator first, InputIterator last) { is_dirty_ = true; ModelCollection<T>::insert(position, first, last); }
-  iterator erase(iterator position) { is_dirty_ = true; return ModelCollection<T>::erase(position); }
-  iterator erase(iterator first, iterator last) { is_dirty_ = true; return ModelCollection<T>::erase(first, last); }
-  void swap(HasMany& x) { is_dirty_ = true; ModelCollection<T>::swap(x); }
-  void clear() { is_dirty_ = true; ModelCollection<T>::clear(); }
+  void resize(size_type n, value_type val = value_type()) { touch(); ModelCollection<T>::resize(n, val); }
+  template <class InputIterator> void assign(InputIterator first, InputIterator last) { touch(); ModelCollection<T>::assign(first, last); }
+  void assign(size_type n, const value_type val) { touch(); ModelCollection<T>::assign(n, val); }
+  void push_back(const value_type val) { touch(); ModelCollection<T>::push_back(val); }
+  void pop_back() { touch(); ModelCollection<T>::pop_back(); }
+  iterator insert(iterator position, const value_type val) { touch(); return ModelCollection<T>::insert(position, val); }
+  void insert(iterator position, size_type n, const value_type val) { touch(); ModelCollection<T>::insert(position, n, val); }
+  template <class InputIterator> void insert(iterator position, InputIterator first, InputIterator last) { touch(); ModelCollection<T>::insert(position, first, last); }
+  iterator erase(iterator position) { touch(); return ModelCollection<T>::erase(position); }
+  iterator erase(iterator first, iterator last) { touch(); return ModelCollection<T>::erase(first, last); }
+  void swap(HasMany& x) { touch(); ModelCollection<T>::swap(x); }
+  void clear() { touch(); ModelCollection<T>::clear(); }
 
 private:
   mutable bool is_dirty_;
@@ -136,6 +149,11 @@ public:
     }
 
     return is_dirty_;
+  }
+
+  void touch()
+  {
+    is_dirty_ = true;
   }
 
   void clean() const
@@ -176,7 +194,7 @@ public:
       item_ = NULL;
     }
 
-    is_dirty_ = true;
+    touch();
   }
 
   void from_json(std::string values, const int &flags = 0)

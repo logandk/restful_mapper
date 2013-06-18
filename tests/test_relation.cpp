@@ -136,5 +136,14 @@ TEST(RelationTest, HasMany)
   ASSERT_TRUE(r.is_dirty());
 
   ASSERT_TRUE(r.empty());
+
+  ModelCollection<Task> m1;
+  m1.push_back(Task());
+
+  HasMany<Task> r2;
+
+  r2 = m1;
+
+  ASSERT_EQ(1, r2.size());
 }
 
