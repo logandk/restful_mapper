@@ -27,8 +27,7 @@ public:
   {
   }
 
-  string to_json(const int &flags = 0,
-      const std::set<std::string> &existing_stack = std::set<std::string>()) const
+  std::string to_json(const int &flags = 0, const std::string &parent_model = "") const
   {
     ostringstream s;
 

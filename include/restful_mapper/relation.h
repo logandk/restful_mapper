@@ -2,7 +2,6 @@
 #define RESTFUL_MAPPER_RELATION_H
 
 #include <restful_mapper/model_collection.h>
-#include <set>
 
 namespace restful_mapper
 {
@@ -38,8 +37,7 @@ public:
     clean();
   }
 
-  std::string to_json(const int &flags = 0,
-      const std::set<std::string> &existing_stack = std::set<std::string>()) const
+  std::string to_json(const int &flags = 0, const std::string &parent_model = "") const
   {
     std::ostringstream s;
     s << "[";
@@ -48,7 +46,7 @@ public:
 
     for (i = ModelCollection<T>::begin(); i != i_end; ++i)
     {
-      s << i->to_json(flags, existing_stack);
+      s << i->to_json(flags, parent_model);
       if ((i + 1) != i_end) s << ",";
     }
 
@@ -217,12 +215,11 @@ public:
     item_->from_json(values, flags, true);
   }
 
-  std::string to_json(const int &flags = 0,
-      const std::set<std::string> &existing_stack = std::set<std::string>()) const
+  std::string to_json(const int &flags = 0, const std::string &parent_model = "") const
   {
     if (item_)
     {
-      return item_->to_json(flags, existing_stack);
+      return item_->to_json(flags, parent_model);
     }
     else
     {

@@ -36,12 +36,11 @@ public:
     m.get("parent_id", parent_id);
   }
 
-  string to_json(const int &flags = 0,
-      const std::set<std::string> &existing_stack = std::set<std::string>()) const
+  std::string to_json(const int &flags = 0, const std::string &parent_model = "") const
   {
     Mapper m(flags);
-    m.relationship_stack_append(existing_stack);
-    m.relationship_stack_append("Item");
+    m.set_current_model("Item");
+    m.set_parent_model(parent_model);
 
     m.set("id", id);
     m.set("revision", revision);
@@ -445,7 +444,7 @@ TEST(MapperTest, HasOneWithValue)
 
   Mapper m3(IGNORE_DIRTY_FLAG);
   m3.set("child", child);
-  ASSERT_STREQ("{\"child\":{\"id\":1,\"revision\":8,\"task\":\"do something first\"}}", m3.dump().c_str());
+  ASSERT_STREQ("{\"child\":{\"id\":1,\"revision\":8,\"task\":\"do something first\",\"parent\":null,\"parent_id\":2}}", m3.dump().c_str());
 
   ASSERT_FALSE(child.is_dirty());
   ASSERT_FALSE(child->parent.is_dirty());
@@ -522,7 +521,7 @@ TEST(MapperTest, OmitParentKeys)
   Item item;
 
   Mapper m(OMIT_PARENT_KEYS);
-  m.relationship_stack_append("Item");
+  m.set_parent_model("Item");
 
   item.id = 2;
   item.task = "Play";

@@ -4,7 +4,6 @@
 #include <restful_mapper/field.h>
 #include <restful_mapper/json.h>
 #include <restful_mapper/relation.h>
-#include <set>
 
 namespace restful_mapper
 {
@@ -262,7 +261,7 @@ public:
   {
     if (should_output_single_field() && field_filter_ != key) return;
     if (!should_ignore_dirty_flag() && !attr.is_dirty()) return;
-    if (should_omit_parent_keys() && relationship_stack_contains(attr.class_name())) return;
+    if (should_omit_parent_keys() && parent_model_ == attr.class_name()) return;
 
     if (!should_output_single_field())
     {
@@ -293,10 +292,10 @@ public:
     if (should_output_shallow()) return;
     if (should_output_single_field() && field_filter_ != key) return;
     if (!should_ignore_dirty_flag() && !attr.is_dirty()) return;
-    if (should_omit_parent_keys() && relationship_stack_contains(attr.class_name())) return;
+    if (should_omit_parent_keys() && parent_model_ == attr.class_name()) return;
 
     set(key, attr.to_json((flags_ | INCLUDE_PRIMARY_KEY | OMIT_PARENT_KEYS) & ~OUTPUT_SINGLE_FIELD,
-        relationship_stack_));
+        current_model_));
 
     if (!should_keep_fields_dirty()) attr.clean();
   }
@@ -315,7 +314,7 @@ public:
     if (!should_ignore_dirty_flag() && !attr.is_dirty()) return;
 
     set(key, attr.to_json((flags_ | INCLUDE_PRIMARY_KEY | OMIT_PARENT_KEYS) & ~OUTPUT_SINGLE_FIELD,
-        relationship_stack_));
+        current_model_));
 
     if (!should_keep_fields_dirty()) attr.clean();
   }
@@ -334,29 +333,29 @@ public:
     if (!should_ignore_dirty_flag() && !attr.is_dirty()) return;
 
     set(key, attr.to_json((flags_ | INCLUDE_PRIMARY_KEY | OMIT_PARENT_KEYS) & ~OUTPUT_SINGLE_FIELD,
-        relationship_stack_));
+        current_model_));
 
     if (!should_keep_fields_dirty()) attr.clean();
   }
 
-  const std::set<std::string> &relationship_stack() const
+  const std::string &current_model() const
   {
-    return relationship_stack_;
+    return current_model_;
   }
 
-  void relationship_stack_append(const std::string &class_name)
+  void set_current_model(const std::string &value)
   {
-    relationship_stack_.insert(class_name);
+    current_model_ = value;
   }
 
-  void relationship_stack_append(const std::set<std::string> &existing_stack)
+  const std::string &parent_model() const
   {
-    relationship_stack_.insert(existing_stack.begin(), existing_stack.end());
+    return parent_model_;
   }
 
-  bool relationship_stack_contains(const std::string &class_name) const
+  void set_parent_model(const std::string &value)
   {
-    return relationship_stack_.find(class_name) != relationship_stack_.end();
+    parent_model_ = value;
   }
 
 private:
@@ -365,7 +364,8 @@ private:
 
   int flags_;
   std::string field_filter_;
-  std::set<std::string> relationship_stack_;
+  std::string current_model_;
+  std::string parent_model_;
 
   inline bool should_ignore_missing_fields() const
   {

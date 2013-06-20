@@ -773,7 +773,7 @@ TEST_F(ModelTest, OmitParentKeys)
   c.cities[0].citizens[1].country_id = 3;
   c.cities[0].citizens[1].city_id = 950;
 
-  ASSERT_STREQ("{\"cities\":[{\"id\":1,\"name\":\"Gothenburg\",\"citizens\":[{\"id\":1},{\"id\":2,\"first_name\":\"Rick\"}]},{\"id\":2,\"name\":\"Detroit\"}]}", c.to_json().c_str());
+  ASSERT_STREQ("{\"cities\":[{\"id\":1,\"name\":\"Gothenburg\",\"citizens\":[{\"id\":1},{\"id\":2,\"country_id\":3,\"first_name\":\"Rick\"}]},{\"id\":2,\"name\":\"Detroit\"}]}", c.to_json().c_str());
 
   Country c2 = c.clone();
   c2.cities = c.cities.clone();

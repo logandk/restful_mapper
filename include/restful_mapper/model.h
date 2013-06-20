@@ -55,12 +55,11 @@ public:
     exists_ = exists;
   }
 
-  std::string to_json(const int &flags = 0,
-      const std::set<std::string> &existing_stack = std::set<std::string>()) const
+  std::string to_json(const int &flags = 0, const std::string &parent_model = "") const
   {
     Mapper mapper(flags);
-    mapper.relationship_stack_append(existing_stack);
-    mapper.relationship_stack_append(class_name());
+    mapper.set_current_model(class_name());
+    mapper.set_parent_model(parent_model);
 
     map_set(mapper);
 
