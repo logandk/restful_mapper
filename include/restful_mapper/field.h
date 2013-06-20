@@ -445,6 +445,27 @@ protected:
   bool is_assigned_;
 };
 
+/**
+ * @brief Represents the foreign key column of a database object.
+ */
+template <class T>
+class Foreign : public FieldBase<long long>
+{
+public:
+  // Inherit from FieldBase
+  Foreign() : FieldBase<long long>() { value_ = 0; }
+  const long long &operator=(const long long &value) { return set(value); }
+  const Foreign &operator=(const FieldBase<long long> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  const Foreign &operator=(const FieldBase<int> &value) { set(value); is_null_ = value.is_null(); return *this; }
+  virtual std::string name() { return type_info_name(typeid(long long)); }
+  virtual void clear(const bool &keep_clean = false) { clear_(0, keep_clean); };
+
+  const std::string &class_name() const
+  {
+    return T::class_name();
+  }
+};
+
 }
 
 #endif // RESTFUL_MAPPER_FIELD_H

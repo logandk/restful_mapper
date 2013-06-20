@@ -93,9 +93,9 @@ class City : public Model<City>
 {
 public:
   Primary id;
-  Field<int> country_id;
+  Foreign<Country> country_id;
   Field<string> name;
-  HasOne<Country> country;
+  BelongsTo<Country> country;
   HasOne<Zipcode> zipcode;
   HasMany<Citizen> citizens;
 
@@ -134,9 +134,9 @@ class Zipcode : public Model<Zipcode>
 {
 public:
   Primary id;
-  Field<int> city_id;
+  Foreign<City> city_id;
   Field<string> code;
-  HasOne<City> city;
+  BelongsTo<City> city;
 
   virtual void map_set(Mapper &mapper) const
   {
@@ -169,18 +169,22 @@ class Citizen : public Model<Citizen>
 {
 public:
   Primary id;
-  Field<int> city_id;
+  Foreign<Country> country_id;
+  Foreign<City> city_id;
   Field<string> first_name;
   Field<string> last_name;
-  HasOne<City> city;
+  BelongsTo<Country> country;
+  BelongsTo<City> city;
   HasMany<PhoneNumber> phone_numbers;
 
   virtual void map_set(Mapper &mapper) const
   {
     mapper.set("id", id);
+    mapper.set("country_id", country_id);
     mapper.set("city_id", city_id);
     mapper.set("first_name", first_name);
     mapper.set("last_name", last_name);
+    mapper.set("country", country);
     mapper.set("city", city);
     mapper.set("phone_numbers", phone_numbers);
   }
@@ -188,9 +192,11 @@ public:
   virtual void map_get(const Mapper &mapper)
   {
     mapper.get("id", id);
+    mapper.get("country_id", country_id);
     mapper.get("city_id", city_id);
     mapper.get("first_name", first_name);
     mapper.get("last_name", last_name);
+    mapper.get("country", country);
     mapper.get("city", city);
     mapper.get("phone_numbers", phone_numbers);
   }
@@ -210,9 +216,9 @@ class PhoneNumber : public Model<PhoneNumber>
 {
 public:
   Primary id;
-  Field<int> citizen_id;
+  Foreign<Citizen> citizen_id;
   Field<int> number;
-  HasOne<Citizen> citizen;
+  BelongsTo<Citizen> citizen;
 
   virtual void map_set(Mapper &mapper) const
   {
@@ -259,6 +265,12 @@ protected:
     tzset();
   }
 };
+
+TEST_F(ModelTest, ClassName)
+{
+  ASSERT_STREQ("Todo", Todo::class_name().c_str());
+  ASSERT_STREQ("Zipcode", Zipcode::class_name().c_str());
+}
 
 TEST_F(ModelTest, GetItem)
 {
@@ -590,11 +602,19 @@ TEST_F(ModelTest, SaveHasMany)
   Country c = Country::find(1);
 
   c.cities[0].name = "Gothenburg";
+
+  c.cities.build();
+  c.cities[2].name = "Detroit";
+  c.cities[2].country_id = 200;
+
   c.save();
 
   Country c2 = Country::find(1);
 
+  ASSERT_EQ(3, c2.cities.size());
   ASSERT_STREQ("Gothenburg", c2.cities[0].name.c_str());
+  ASSERT_STREQ("Detroit", c2.cities[2].name.c_str());
+  ASSERT_EQ(1, c2.cities[2].country_id);
 
   ASSERT_TRUE(c.id.get() == c2.id.get());
   ASSERT_TRUE(c.name.get() == c2.name.get());
@@ -736,5 +756,28 @@ TEST_F(ModelTest, Comparison)
   ASSERT_TRUE(c1_1 == c1_2);
   ASSERT_FALSE(c1_1 == c2_1);
   ASSERT_TRUE(c1_2 != c2_1);
+}
+
+TEST_F(ModelTest, OmitParentKeys)
+{
+  Country c = Country::find(1);
+  c.reload_many("cities");
+
+  c.cities[0].name = "Gothenburg";
+
+  c.cities[1].name = "Detroit";
+  c.cities[1].country_id = 200;
+  c.cities[1].country->name = "US";
+
+  c.cities[0].citizens[1].first_name = "Rick";
+  c.cities[0].citizens[1].country_id = 3;
+  c.cities[0].citizens[1].city_id = 950;
+
+  ASSERT_STREQ("{\"cities\":[{\"id\":1,\"name\":\"Gothenburg\",\"citizens\":[{\"id\":1},{\"id\":2,\"first_name\":\"Rick\"}]},{\"id\":2,\"name\":\"Detroit\"}]}", c.to_json().c_str());
+
+  Country c2 = c.clone();
+  c2.cities = c.cities.clone();
+
+  ASSERT_STREQ("{\"name\":\"Denmark\",\"cities\":[{\"name\":\"Gothenburg\"},{\"name\":\"Detroit\"}]}", c2.to_json().c_str());
 }
 

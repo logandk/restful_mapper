@@ -16,7 +16,14 @@ public:
   Primary id;
   Field<int> revision;
   Field<string> task;
-  HasOne<Item> parent;
+  BelongsTo<Item> parent;
+  Foreign<Item> parent_id;
+
+  static const std::string &class_name()
+  {
+    static std::string class_name = "Item";
+    return class_name;
+  }
 
   void from_json(string values, const int &flags = 0, const bool &exists = false)
   {
@@ -26,16 +33,21 @@ public:
     m.get("revision", revision);
     m.get("task", task);
     m.get("parent", parent);
+    m.get("parent_id", parent_id);
   }
 
-  string to_json(const int &flags = 0) const
+  string to_json(const int &flags = 0,
+      const std::set<std::string> &existing_stack = std::set<std::string>()) const
   {
     Mapper m(flags);
+    m.relationship_stack_append(existing_stack);
+    m.relationship_stack_append("Item");
 
     m.set("id", id);
     m.set("revision", revision);
     m.set("task", task);
     m.set("parent", parent);
+    m.set("parent_id", parent_id);
 
     return m.dump();
   }
@@ -414,7 +426,7 @@ TEST(MapperTest, HasOneWithValue)
   Item item;
   HasOne<Item> child;
 
-  Mapper m("{\"revision\":5,\"id\":3,\"task\":\"do something\",\"child\":{\"revision\":8,\"id\":1,\"task\":\"do something first\"}}");
+  Mapper m("{\"revision\":5,\"id\":3,\"task\":\"do something\",\"child\":{\"revision\":8,\"id\":1,\"task\":\"do something first\",\"parent_id\":2}}");
 
   m.get("id", item.id);
   m.get("revision", item.revision);
@@ -433,7 +445,7 @@ TEST(MapperTest, HasOneWithValue)
 
   Mapper m3(IGNORE_DIRTY_FLAG);
   m3.set("child", child);
-  ASSERT_STREQ("{\"child\":{\"id\":1,\"revision\":8,\"task\":\"do something first\",\"parent\":null}}", m3.dump().c_str());
+  ASSERT_STREQ("{\"child\":{\"id\":1,\"revision\":8,\"task\":\"do something first\"}}", m3.dump().c_str());
 
   ASSERT_FALSE(child.is_dirty());
   ASSERT_FALSE(child->parent.is_dirty());
@@ -503,5 +515,25 @@ TEST(MapperTest, HasManyWithValue)
   Mapper m4;
   m4.set("children", children);
   ASSERT_STREQ("{\"children\":[{\"id\":1},{\"id\":7,\"task\":\"Sometask\"},{\"id\":3},{}]}", m4.dump().c_str());
+}
+
+TEST(MapperTest, OmitParentKeys)
+{
+  Item item;
+
+  Mapper m(OMIT_PARENT_KEYS);
+  m.relationship_stack_append("Item");
+
+  item.id = 2;
+  item.task = "Play";
+  item.parent_id = 1;
+
+  m.set("id", item.id);
+  m.set("revision", item.revision);
+  m.set("task", item.task);
+  m.set("parent", item.parent);
+  m.set("parent_id", item.parent_id);
+
+  ASSERT_STREQ("{\"task\":\"Play\"}", m.dump().c_str());
 }
 

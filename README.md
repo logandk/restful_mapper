@@ -121,6 +121,7 @@ using namespace std;
 using namespace restful_mapper;
 
 class User;
+class Alert;
 
 class Todo : public Model<Todo>
 {
@@ -131,8 +132,9 @@ public:
   Field<double> time;
   Field<bool> completed;
   Field<time_t> completed_on;
-  Field<int> user_id;
-  HasOne<User> user;
+  Foreign<int> user_id;
+  BelongsTo<User> user;
+  HasOne<Alert> alert;
 
   virtual void map_set(Mapper &mapper) const
   {
@@ -144,6 +146,7 @@ public:
     mapper.set("completed_on", completed_on);
     mapper.set("user_id", user_id);
     mapper.set("user", user);
+    mapper.set("alert", alert);
   }
 
   virtual void map_get(const Mapper &mapper)
@@ -156,6 +159,7 @@ public:
     mapper.get("completed_on", completed_on);
     mapper.get("user_id", user_id);
     mapper.get("user", user);
+    mapper.get("alert", alert);
   }
 
   virtual std::string endpoint() const
@@ -184,12 +188,14 @@ interface defined in `restful_mapper::Model`.
 Each entity can hold a number of fields and relationships:
 
 * `restful_mapper::Primary` -- maps a primary key (integer)
+* `restful_mapper::Foreign` -- maps a foreign key (integer)
 * `restful_mapper::Field<string>` -- maps a string literal (represented in locale charset)
 * `restful_mapper::Field<int>` -- maps an integer value
 * `restful_mapper::Field<double>` -- maps a floating point value
 * `restful_mapper::Field<bool>` -- maps a boolean value
 * `restful_mapper::Field<time_t>` -- maps a datetime value (represented in the local timezone)
-* `restful_mapper::HasOne<class>` -- maps a one-to-one or many-to-one relationship
+* `restful_mapper::HasOne<class>` -- maps a one-to-one or many-to-one relationship on the referenced side
+* `restful_mapper::BelongsTo<class>` -- maps a one-to-one or many-to-one relationship on the foreign key side
 * `restful_mapper::HasMany<class>` -- maps a one-to-many relationship
 
 The interface specified the following methods, which must be overriden:

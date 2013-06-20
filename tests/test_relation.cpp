@@ -17,11 +17,18 @@ public:
   int id;
   string task;
 
+  static const std::string &class_name()
+  {
+    static std::string class_name = "Task";
+    return class_name;
+  }
+
   void from_json(string values, const int &flags = 0, const bool &exists = false)
   {
   }
 
-  string to_json(const int &flags = 0) const
+  string to_json(const int &flags = 0,
+      const std::set<std::string> &existing_stack = std::set<std::string>()) const
   {
     ostringstream s;
 
@@ -96,6 +103,66 @@ TEST(RelationTest, HasOne)
   ASSERT_NO_THROW(r4 = r3);
 }
 
+TEST(RelationTest, BelongsTo)
+{
+  BelongsTo<Task> r;
+
+  ASSERT_TRUE(r.is_null());
+  ASSERT_FALSE(r.is_dirty());
+  ASSERT_THROW(r.get(), runtime_error);
+  ASSERT_THROW((Task) r, runtime_error);
+  ASSERT_THROW(r->id, runtime_error);
+
+  ASSERT_STREQ("null", r.to_json().c_str());
+
+  BelongsTo<Task> r2(r);
+  ASSERT_TRUE(r2.is_null());
+  ASSERT_FALSE(r2.is_dirty());
+  ASSERT_THROW(r2.get(), runtime_error);
+  ASSERT_THROW((Task) r2, runtime_error);
+  ASSERT_THROW(r2->id, runtime_error);
+
+  Task t;
+  t.id = 3;
+  t.task = "Play!";
+
+  r2 = t;
+  ASSERT_FALSE(r2.is_null());
+  ASSERT_TRUE(r2.is_dirty());
+  ASSERT_EQ(3, r2.get().id);
+  ASSERT_STREQ("Play!", r2->task.c_str());
+
+  ASSERT_STREQ("{\"id\":3,\"task\":\"Play!\"}", r2.to_json().c_str());
+
+  r2->task = "Testing...";
+  ASSERT_STREQ("Play!", t.task.c_str());
+
+  r2.clear();
+  ASSERT_TRUE(r2.is_null());
+  ASSERT_THROW(r2.get(), runtime_error);
+
+  r.build();
+  ASSERT_TRUE(r2.is_dirty());
+  r->id = 8;
+  r->task = "flaf";
+  ASSERT_FALSE(r.is_null());
+  ASSERT_EQ(8, r.get().id);
+  ASSERT_STREQ("flaf", r->task.c_str());
+
+  r2 = r;
+  ASSERT_FALSE(r2.is_null());
+  ASSERT_EQ(8, r2.get().id);
+  ASSERT_STREQ("flaf", r2->task.c_str());
+
+  r->id = 3;
+  ASSERT_EQ(8, r2.get().id);
+
+  BelongsTo<Task> r3;
+  BelongsTo<Task> r4;
+
+  ASSERT_NO_THROW(r4 = r3);
+}
+
 TEST(RelationTest, HasMany)
 {
   HasMany<Task> r;
@@ -145,5 +212,12 @@ TEST(RelationTest, HasMany)
   r2 = m1;
 
   ASSERT_EQ(1, r2.size());
+}
+
+TEST(RelationTest, GetClassName)
+{
+  ASSERT_STREQ("Task", HasMany<Task>::class_name().c_str());
+  ASSERT_STREQ("Task", HasOne<Task>::class_name().c_str());
+  ASSERT_STREQ("Task", BelongsTo<Task>::class_name().c_str());
 }
 

@@ -16,24 +16,31 @@ public:
 
   Model() : exists_(false) {}
 
+  static const std::string &class_name()
+  {
+    static std::string class_name = type_info_name(typeid(T));
+
+    return class_name;
+  }
+
   virtual void map_set(Mapper &mapper) const
   {
-    throw std::logic_error(std::string("map_set not implemented for ") + type_info_name(typeid(T)));
+    throw std::logic_error(std::string("map_set not implemented for ") + class_name());
   }
 
   virtual void map_get(const Mapper &mapper)
   {
-    throw std::logic_error(std::string("map_get not implemented for ") + type_info_name(typeid(T)));
+    throw std::logic_error(std::string("map_get not implemented for ") + class_name());
   }
 
   virtual std::string endpoint() const
   {
-    throw std::logic_error(std::string("endpoint not implemented for ") + type_info_name(typeid(T)));
+    throw std::logic_error(std::string("endpoint not implemented for ") + class_name());
   }
 
   virtual const Primary &primary() const
   {
-    throw std::logic_error(std::string("primary not implemented for ") + type_info_name(typeid(T)));
+    throw std::logic_error(std::string("primary not implemented for ") + class_name());
   }
 
   void from_json(std::string values, const int &flags = 0)
@@ -48,9 +55,13 @@ public:
     exists_ = exists;
   }
 
-  std::string to_json(const int &flags = 0) const
+  std::string to_json(const int &flags = 0,
+      const std::set<std::string> &existing_stack = std::set<std::string>()) const
   {
     Mapper mapper(flags);
+    mapper.relationship_stack_append(existing_stack);
+    mapper.relationship_stack_append(class_name());
+
     map_set(mapper);
 
     return mapper.dump();

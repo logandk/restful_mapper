@@ -2,6 +2,7 @@
 #define RESTFUL_MAPPER_RELATION_H
 
 #include <restful_mapper/model_collection.h>
+#include <set>
 
 namespace restful_mapper
 {
@@ -11,6 +12,11 @@ class HasMany : public ModelCollection<T>
 {
 public:
   HasMany() : ModelCollection<T>(), is_dirty_(false) {}
+
+  static const std::string &class_name()
+  {
+    return T::class_name();
+  }
 
   void from_json(std::string values, const int &flags = 0)
   {
@@ -32,7 +38,8 @@ public:
     clean();
   }
 
-  std::string to_json(const int &flags = 0) const
+  std::string to_json(const int &flags = 0,
+      const std::set<std::string> &existing_stack = std::set<std::string>()) const
   {
     std::ostringstream s;
     s << "[";
@@ -41,7 +48,7 @@ public:
 
     for (i = ModelCollection<T>::begin(); i != i_end; ++i)
     {
-      s << i->to_json(flags);
+      s << i->to_json(flags, existing_stack);
       if ((i + 1) != i_end) s << ",";
     }
 
@@ -118,12 +125,12 @@ private:
 };
 
 template <class T>
-class HasOne
+class SingleRelationshipBase
 {
 public:
-  HasOne() : item_(NULL), is_dirty_(false) {}
+  SingleRelationshipBase() : item_(NULL), is_dirty_(false) {}
 
-  HasOne(const HasOne &other) : item_(NULL), is_dirty_(other.is_dirty_)
+  SingleRelationshipBase(const SingleRelationshipBase &other) : item_(NULL), is_dirty_(other.is_dirty_)
   {
     if (other.item_)
     {
@@ -131,9 +138,14 @@ public:
     }
   }
 
-  ~HasOne()
+  virtual ~SingleRelationshipBase()
   {
     clear();
+  }
+
+  static const std::string &class_name()
+  {
+    return T::class_name();
   }
 
   bool is_null() const
@@ -205,11 +217,12 @@ public:
     item_->from_json(values, flags, true);
   }
 
-  std::string to_json(const int &flags = 0) const
+  std::string to_json(const int &flags = 0,
+      const std::set<std::string> &existing_stack = std::set<std::string>()) const
   {
     if (item_)
     {
-      return item_->to_json(flags);
+      return item_->to_json(flags, existing_stack);
     }
     else
     {
@@ -231,12 +244,7 @@ public:
     return get();
   }
 
-  const T &operator=(const T &value)
-  {
-    return set(value);
-  }
-
-  const HasOne &operator=(const HasOne &value)
+  const SingleRelationshipBase &operator=(const SingleRelationshipBase &value)
   {
     if (value.is_null())
     {
@@ -264,6 +272,30 @@ private:
       s << "Related object \"" << type_info_name(typeid(T)) << "\" does not exist";
       throw std::runtime_error(s.str());
     }
+  }
+};
+
+template <class T>
+class HasOne : public SingleRelationshipBase<T>
+{
+public:
+  HasOne() : SingleRelationshipBase<T>() {}
+
+  const T &operator=(const T &value)
+  {
+    return this->set(value);
+  }
+};
+
+template <class T>
+class BelongsTo : public SingleRelationshipBase<T>
+{
+public:
+  BelongsTo() : SingleRelationshipBase<T>() {}
+
+  const T &operator=(const T &value)
+  {
+    return this->set(value);
   }
 };
 

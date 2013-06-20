@@ -15,6 +15,9 @@ Version 0.2.0-dev
 	* Added proper support for copying null values between fields
 	* Added `emplace_clone` method for in-place cloning of models
 	* Added `clone` method for model collections
+	* Added `Foreign` and `BelongsTo` field types
+	* Do not include parents and foreign keys to parents in json ouput
+	  when mapping child objects
 
 Version 0.1.2
 	* First release

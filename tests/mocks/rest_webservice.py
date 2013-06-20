@@ -102,10 +102,12 @@ class Zipcode(db.Model):
 
 class Citizen(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
     first_name = db.Column(db.Unicode)
     last_name = db.Column(db.Unicode)
 
+    country = db.relationship('Country', backref=db.backref('citizens', lazy='dynamic'))
     city = db.relationship('City', backref=db.backref('citizens', lazy='dynamic'))
 
 class PhoneNumber(db.Model):
