@@ -171,11 +171,18 @@ public:
     is_dirty_ = false;
   }
 
-  const T &build()
+  T &build()
   {
     clear();
 
     item_ = new T();
+
+    return *item_;
+  }
+
+  T &get()
+  {
+    check_null();
 
     return *item_;
   }
@@ -227,14 +234,28 @@ public:
     }
   }
 
-  T *operator->() const
+  T *operator->()
   {
     check_null();
 
     return item_;
   }
 
-  operator T() const
+  operator T()
+  {
+    check_null();
+
+    return get();
+  }
+
+  const T *operator->() const
+  {
+    check_null();
+
+    return item_;
+  }
+
+  operator const T() const
   {
     check_null();
 
