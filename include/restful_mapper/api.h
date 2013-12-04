@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <algorithm>
 #include <map>
 #include <cctype>
 #include <restful_mapper/json.h>
@@ -230,20 +231,19 @@ public:
       std::string separator = "";
       Json::Parser parser(json_struct);
 
-      errors_ = parser.find("validation_errors").to_string_map();
+      std::map<std::string, Json::Node> errors;
+      errors = parser.find("validation_errors").to_map();
 
-      FieldMap::const_iterator i, i_end = errors_.end();
-      for (i = errors_.begin(); i != i_end; ++i)
+      std::map<std::string, Json::Node>::const_iterator i, i_end = errors.end();
+      for (i = errors.begin(); i != i_end; ++i)
       {
-        std::string field_name = i->first;
-        std::string field_value = i->second;
+        std::string field_name  = i->first;
 
-        // Capitalize field name
-        field_name[0] = std::toupper(field_name[0]);
+        errors_[field_name] = parse_errors(i->second, 1, false);
+
         what_ += separator;
-        what_ += field_name;
-        what_ += " ";
-        what_ += field_value;
+        what_ += format_field(field_name);
+        what_ += parse_errors(i->second);
         separator = "\n";
       }
     }
@@ -280,6 +280,68 @@ public:
 private:
   FieldMap errors_;
   std::string what_;
+
+  std::string parse_errors(const Json::Node &node, const unsigned int &indent = 1, const bool &add_space = true)
+  {
+    if (node.is_array())
+    {
+      std::string formatted;
+
+      std::vector<Json::Node> errors = node.to_array();
+
+      std::vector<Json::Node>::const_iterator i, i_end = errors.end();
+      for (i = errors.begin(); i != i_end; ++i)
+      {
+        formatted += parse_errors(*i, indent);
+      }
+
+      return formatted;
+    }
+    else if (node.is_map())
+    {
+      std::string formatted;
+
+      std::map<std::string, Json::Node> errors = node.to_map();
+
+      std::map<std::string, Json::Node>::const_iterator i, i_end = errors.end();
+      for (i = errors.begin(); i != i_end; ++i)
+      {
+        std::string field_name  = i->first;
+        std::string field_value = parse_errors(i->second, indent + 1);
+
+        formatted += "\n";
+        for (unsigned int j = 0; j < indent; j++)
+        {
+          formatted += "  ";
+        }
+        formatted += format_field(field_name);
+        formatted += field_value;
+      }
+
+      return formatted;
+    }
+    else if (node.is_string())
+    {
+      std::string formatted;
+
+      if (add_space)
+      {
+        formatted += " ";
+      }
+
+      formatted += node.to_string();
+
+      return formatted;
+    }
+  }
+
+  std::string format_field(const std::string &field)
+  {
+    std::string formatted(field);
+    std::replace(formatted.begin(), formatted.end(), '_', ' ');
+    formatted[0] = std::toupper(formatted[0]);
+    return formatted;
+  }
 };
 
 }

@@ -122,6 +122,12 @@ public:
     std::map<std::string, std::string> dump_map() const;
 
     bool is_null() const;
+    bool is_string() const;
+    bool is_int() const;
+    bool is_double() const;
+    bool is_bool() const;
+    bool is_array() const;
+    bool is_map() const;
 
     std::string to_string() const;
     long long to_int() const;

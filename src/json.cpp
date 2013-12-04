@@ -520,6 +520,36 @@ bool Json::Node::is_null() const
   return YAJL_IS_NULL(JSON_TREE_HANDLE);
 }
 
+bool Json::Node::is_string() const
+{
+  return YAJL_IS_STRING(JSON_TREE_HANDLE);
+}
+
+bool Json::Node::is_int() const
+{
+  return YAJL_IS_INTEGER(JSON_TREE_HANDLE);
+}
+
+bool Json::Node::is_double() const
+{
+  return YAJL_IS_DOUBLE(JSON_TREE_HANDLE);
+}
+
+bool Json::Node::is_bool() const
+{
+  return YAJL_IS_BOOLEAN(JSON_TREE_HANDLE);
+}
+
+bool Json::Node::is_array() const
+{
+  return YAJL_IS_ARRAY(JSON_TREE_HANDLE);
+}
+
+bool Json::Node::is_map() const
+{
+  return YAJL_IS_OBJECT(JSON_TREE_HANDLE);
+}
+
 string Json::Node::to_string() const
 {
   if (!YAJL_IS_STRING(JSON_TREE_HANDLE))

@@ -1,2 +1,2 @@
-Flask-Restless==0.10
+Flask-Restless==0.12.1
 Flask-SQLAlchemy==0.16
