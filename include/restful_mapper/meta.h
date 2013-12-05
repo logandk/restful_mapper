@@ -1,7 +1,7 @@
 #ifndef RESTFUL_MAPPER_META_H
 #define RESTFUL_MAPPER_META_H
 
-#define VERSION "0.2.1"
+#define VERSION "0.2.2"
 
 #endif // RESTFUL_MAPPER_META_H
 

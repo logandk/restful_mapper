@@ -1,3 +1,6 @@
+Version 0.2.2
+	* Correct bug when receiving broken JSON for a validation error
+
 Version 0.2.1
 	* Support nested validation errors
 

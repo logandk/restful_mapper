@@ -333,6 +333,8 @@ private:
 
       return formatted;
     }
+
+    return "";
   }
 
   std::string format_field(const std::string &field)

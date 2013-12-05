@@ -67,6 +67,9 @@ TEST(ApiTest, ValidationErrorJson)
   ValidationError err3("{\"validation_errors\":{\"phone_no\":\"must have numbers\","
       "\"company\":{\"title\":\"cannot be empty\"},\"addresses\":[{\"street\":\"not provided\"}]}}");
   ASSERT_STREQ("Addresses\n  Street not provided\nCompany\n  Title cannot be empty\nPhone no must have numbers", err3.what());
+
+  ValidationError err4("{\"validation_errors\":{\"phone_no\":null}}");
+  ASSERT_STREQ("Phone no", err4.what());
 }
 
 TEST(ApiTest, ProxyValid)
