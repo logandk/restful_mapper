@@ -1,4 +1,7 @@
-Version 0.2.0-dev
+Version 0.2.1
+	* Support nested validation errors
+
+Version 0.2.0
 	* Added `clone` method
 	* Abstracted `ModelCollection` class used by `HasMany` and `Model`
 	* Added `find` method on collections for searching on primary key
