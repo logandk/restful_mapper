@@ -2,6 +2,7 @@
 #include <restful_mapper/internal/utf8.h>
 #include <cstring>
 #include <sstream>
+#include <stdlib>
 
 extern "C" {
 #include <yajl/yajl_gen.h>
