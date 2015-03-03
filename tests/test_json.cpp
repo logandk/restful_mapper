@@ -183,3 +183,89 @@ TEST(JsonTest, Parse)
   ASSERT_STREQ("numbers[\"abc\"]", nmap.find("abc")->second.name().c_str());
 }
 
+TEST(JsonTest, AddValueToMap)
+{
+    Json::Parser parser("{}");
+    Json::Node node;
+    
+    ASSERT_TRUE(parser.is_loaded());
+    
+    ASSERT_FALSE(parser.exists("an-int"));
+    ASSERT_TRUE(parser.root().add_int("an-int", 3, node));
+    ASSERT_EQ("an-int", node.name());
+    ASSERT_EQ(3, node.to_int());
+    ASSERT_TRUE(parser.exists("an-int"));
+    ASSERT_EQ(3, parser.find("an-int").to_int());
+    
+    ASSERT_FALSE(parser.exists("a-double"));
+    ASSERT_TRUE(parser.root().add_double("a-double", 4.5, node));
+    ASSERT_EQ("a-double", node.name());
+    ASSERT_EQ(4.5, node.to_double());
+    ASSERT_TRUE(parser.exists("a-double"));
+    ASSERT_EQ(4.5, parser.find("a-double").to_double());
+    
+    ASSERT_FALSE(parser.exists("a-bool"));
+    ASSERT_TRUE(parser.root().add_bool("a-bool", true, node));
+    ASSERT_EQ("a-bool", node.name());
+    ASSERT_EQ(true, node.to_bool());
+    ASSERT_TRUE(parser.exists("a-bool"));
+    ASSERT_EQ(true, parser.find("a-bool").to_bool());
+    
+    ASSERT_FALSE(parser.exists("a-string"));
+    ASSERT_TRUE(parser.root().add_string("a-string", "foo", node));
+    ASSERT_EQ("a-string", node.name());
+    ASSERT_EQ("foo", node.to_string());
+    ASSERT_TRUE(parser.exists("a-string"));
+    ASSERT_EQ("foo", parser.find("a-string").to_string());
+    
+    ASSERT_FALSE(parser.exists("an-array"));
+    ASSERT_TRUE(parser.root().add_array("an-array", node));
+    ASSERT_EQ("an-array", node.name());
+    ASSERT_EQ(0, node.to_array().size());
+    ASSERT_TRUE(parser.exists("an-array"));
+    ASSERT_EQ(0, parser.find("an-array").to_array().size());
+    
+    ASSERT_FALSE(parser.exists("a-map"));
+    ASSERT_TRUE(parser.root().add_map("a-map", node));
+    ASSERT_EQ("a-map", node.name());
+    ASSERT_EQ(0, node.to_map().size());
+    ASSERT_TRUE(parser.exists("a-map"));
+    ASSERT_EQ(0, parser.find("a-map").to_map().size());
+}
+
+TEST(JsonTest, AddValueToArray)
+{
+    Json::Parser parser("{}");
+    Json::Node array;
+    Json::Node node;
+    
+    ASSERT_TRUE(parser.is_loaded());
+    
+    ASSERT_FALSE(parser.exists("an-array"));
+    ASSERT_TRUE(parser.root().add_array("an-array", array));
+    ASSERT_EQ(0, array.to_array().size());
+    
+    ASSERT_TRUE(array.add_int(3, node));
+    ASSERT_EQ(3, node.to_int());
+    ASSERT_EQ(3, array.to_array()[0].to_int());
+    
+    ASSERT_TRUE(array.add_double(4.5, node));
+    ASSERT_EQ(4.5, node.to_double());
+    ASSERT_EQ(4.5, array.to_array()[1].to_double());
+    
+    ASSERT_TRUE(array.add_bool(true, node));
+    ASSERT_EQ(true, node.to_bool());
+    ASSERT_EQ(true, array.to_array()[2].to_bool());
+    
+    ASSERT_TRUE(array.add_string("foo", node));
+    ASSERT_EQ("foo", node.to_string());
+    ASSERT_EQ("foo", array.to_array()[3].to_string());
+    
+    ASSERT_TRUE(array.add_array(node));
+    ASSERT_EQ(0, node.to_array().size());
+    ASSERT_EQ(0, array.to_array()[4].to_array().size());
+    
+    ASSERT_TRUE(array.add_map(node));
+    ASSERT_EQ(0, node.to_map().size());
+    ASSERT_EQ(0, array.to_array()[5].to_map().size());
+}

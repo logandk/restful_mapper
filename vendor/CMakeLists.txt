@@ -42,7 +42,7 @@ endif()
 
 ExternalProject_Add(
   gtest
-  URL https://googletest.googlecode.com/files/gtest-1.6.0.zip
+  URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
   PREFIX gtest
   INSTALL_COMMAND ${CMAKE_COMMAND} -DCMAKE_STATIC_LIBRARY_PREFIX=${CMAKE_STATIC_LIBRARY_PREFIX} -DCMAKE_STATIC_LIBRARY_SUFFIX=${CMAKE_STATIC_LIBRARY_SUFFIX} -P ${CMAKE_CURRENT_SOURCE_DIR}/gtest/install.cmake
   CMAKE_ARGS -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/gtest ${GTEST_FLAGS}

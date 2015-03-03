@@ -33,7 +33,7 @@ add_executable(
   test_query.cpp
   test_relation.cpp
   test_utf8.cpp)
-target_link_libraries(tests gtest gtest_main restful_mapper yajl)
+target_link_libraries(tests gtest gtest_main restful_mapper yajl iconv)
 
 if (BORLAND)
   target_link_libraries(tests libcurl)
