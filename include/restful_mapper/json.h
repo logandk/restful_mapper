@@ -110,6 +110,7 @@ public:
   class Node
   {
   public:
+    Node();
     Node(const std::string &name, void *json_node);
 
     const std::string &name()
@@ -128,6 +129,20 @@ public:
     bool is_bool() const;
     bool is_array() const;
     bool is_map() const;
+
+    bool add_string(const std::string &key, const std::string &string_value, Json::Node &outNode);
+    bool add_int(const std::string &key, int int_value, Json::Node &outNode);
+    bool add_double(const std::string &key, double double_value, Json::Node &outNode);
+    bool add_bool(const std::string &key, bool bool_value, Json::Node &outNode);
+    bool add_array(const std::string &key, Json::Node &outNode);
+    bool add_map(const std::string &key, Json::Node &outNode);
+    
+    bool add_string(const std::string &string_value, Json::Node &outNode);
+    bool add_int(int int_value, Json::Node &outNode);
+    bool add_double(double double_value, Json::Node &outNode);
+    bool add_bool(bool bool_value, Json::Node &outNode);
+    bool add_array(Json::Node &outNode);
+    bool add_map(Json::Node &outNode);
 
     std::string to_string() const;
     long long to_int() const;

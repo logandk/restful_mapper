@@ -466,6 +466,133 @@ void Json::Emitter::emit_array_close()
   yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
 }
 
+yajl_val new_number(int int_value, double double_value, int flags)
+{
+    ostringstream s;
+    std::string number_string;
+    yajl_val value = NULL;
+ 
+    if (flags == YAJL_NUMBER_INT_VALID)
+    {
+        s << int_value;
+    }
+    else
+    {
+        s << double_value;
+    }
+    number_string = s.str();
+ 
+    value = (yajl_val) malloc(sizeof(*value));
+    
+    if (value == NULL) {
+        return NULL;
+    }
+    
+    value->u.number.r = (char*) malloc(number_string.length() + 1);
+    
+    if (value->u.number.r == NULL)
+    {
+        free(value);
+        return NULL;
+    }
+    
+    memcpy(value->u.number.r, number_string.c_str(), number_string.length());
+    
+    value->u.number.r[number_string.length()] = '\0';
+    
+    value->type = yajl_t_number;
+    value->u.number.i = int_value;
+    value->u.number.d = double_value;
+    value->u.number.flags = flags;
+    
+    return value;
+}
+
+yajl_val new_string(const std::string &string_value)
+{
+    yajl_val value = NULL;
+    
+    value = (yajl_val) malloc(sizeof(*value));
+    
+    if (value == NULL) {
+        return NULL;
+    }
+    
+    value->type = yajl_t_string;
+    
+    value->u.string = (char*) malloc(string_value.length());
+    
+    if (value->u.string == NULL)
+    {
+        free(value);
+        return NULL;
+    }
+    
+    memcpy(value->u.string, string_value.c_str(), string_value.length());
+    value->u.string[string_value.length()] = '\0';
+    
+    return value;
+}
+
+yajl_val new_bool(bool bool_value)
+{
+    yajl_val value = NULL;
+    
+    value = (yajl_val) malloc(sizeof(*value));
+    
+    if (value == NULL) {
+        return NULL;
+    }
+    
+    value->type = bool_value ? yajl_t_true : yajl_t_false;
+    
+    return value;
+}
+
+yajl_val new_array()
+{
+    yajl_val value = NULL;
+    
+    value = (yajl_val) malloc(sizeof(*value));
+    
+    if (value == NULL) {
+        return NULL;
+    }
+    
+    value->type = yajl_t_array;
+    value->u.array.values = NULL;
+    value->u.array.len = 0;
+    
+    return value;
+}
+
+yajl_val new_map()
+{    
+    yajl_val value = (yajl_val) malloc(sizeof(*value));
+    
+    if (value == NULL) {
+        return NULL;
+    }
+    
+    value->type = yajl_t_object;
+    value->u.object.keys = NULL;
+    value->u.object.values = NULL;
+    value->u.object.len = 0;
+    
+    return value;
+}
+
+Json::Node::Node()
+{
+    name_ = "";
+    json_tree_ptr_ = new_map();
+    
+    if (json_tree_ptr_ == NULL)
+    {
+        Json::not_found(name_);
+    }
+}
+
 Json::Node::Node(const string &name, void *json_node)
 {
   name_ = name;
@@ -548,6 +675,301 @@ bool Json::Node::is_array() const
 bool Json::Node::is_map() const
 {
   return YAJL_IS_OBJECT(JSON_TREE_HANDLE);
+}
+
+bool add_value(yajl_val obj, const std::string &key, yajl_val value)
+{
+    const char **temp_key = NULL;
+    yajl_val *temp_value = NULL;
+    char *key_copy = NULL;
+    
+    temp_key = (const char **) realloc((void*) obj->u.object.keys,
+                                       sizeof(*(obj->u.object.keys)) * (obj->u.object.len + 1));
+    
+    if (temp_key == NULL) {
+        return false;
+    }
+    obj->u.object.keys = temp_key;
+    
+    temp_value = (yajl_val *) realloc((void*) obj->u.object.values,
+                                      sizeof(*(obj->u.object.values)) * (obj->u.object.len + 1));
+    
+    if (temp_value == NULL) {
+        return false;
+    }
+    
+    obj->u.object.values = temp_value;
+    
+    key_copy = (char*) malloc(key.length() + 1);
+    memcpy(key_copy, key.c_str(), key.length());
+    key_copy[key.length()] = '\0';
+    
+    if (key_copy == NULL)
+    {
+        return false;
+    }
+
+    obj->u.object.keys[obj->u.object.len] = key_copy;
+    obj->u.object.values[obj->u.object.len] = value;
+    obj->u.object.len++;
+    
+    return true;
+}
+
+bool add_value(yajl_val obj, yajl_val value)
+{
+    yajl_val *temp_value = NULL;
+    
+    temp_value = (yajl_val *) realloc((void *) obj->u.array.values,
+                                      sizeof(*(obj->u.array.values)) * (obj->u.array.len + 1));
+    
+    if (temp_value == NULL) {
+        return false;
+    }
+    
+    obj->u.array.values = temp_value;
+    obj->u.array.values[obj->u.array.len] = value;
+    obj->u.array.len++;
+    
+    return true;
+}
+
+yajl_val add_number(yajl_val obj, const std::string &key, int int_value, double double_value, int flags)
+{
+    yajl_val value = new_number(int_value, double_value, flags);
+    
+    if (value != NULL)
+    {
+        if (!add_value(obj, key, value))
+        {
+            free(value->u.number.r);
+            free(value);
+            return NULL;
+        }
+    }
+        
+    return value;
+}
+
+yajl_val add_number(yajl_val obj, int int_value, double double_value, int flags)
+{
+    yajl_val value = new_number(int_value, double_value, flags);
+    
+    if (value != NULL)
+    {
+        if (!add_value(obj, value))
+        {
+            free(value->u.number.r);
+            free(value);
+            return NULL;
+        }
+    }
+        
+    return value;
+}
+
+bool Json::Node::add_string(const std::string &key, const std::string &string_value, Json::Node &outNode)
+{
+    yajl_val value = new_string(string_value);
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, key, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_int(const std::string &key, int int_value, Json::Node &outNode)
+{
+    yajl_val value = add_number(JSON_TREE_HANDLE, key, int_value, (double) int_value, YAJL_NUMBER_INT_VALID);
+    
+    if (value != NULL)
+    {
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_double(const std::string &key, double double_value, Json::Node &outNode)
+{
+    yajl_val value = add_number(JSON_TREE_HANDLE, key, (int) double_value, double_value, YAJL_NUMBER_DOUBLE_VALID);
+    
+    if (value != NULL)
+    {
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_bool(const std::string &key, bool bool_value, Json::Node &outNode)
+{
+    yajl_val value = new_bool(bool_value);
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, key, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_array(const std::string &key, Json::Node &outNode)
+{
+    yajl_val value = new_array();
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, key, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_map(const std::string &key, Json::Node &outNode)
+{
+    yajl_val value = new_map();
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, key, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_string(const std::string &string_value, Json::Node &outNode)
+{
+    yajl_val value = new_string(string_value);
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_int(int int_value, Json::Node &outNode)
+{
+    yajl_val value = add_number(JSON_TREE_HANDLE, int_value, (double) int_value, YAJL_NUMBER_INT_VALID);
+    
+    if (value != NULL)
+    {
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_double(double double_value, Json::Node &outNode)
+{
+    yajl_val value = add_number(JSON_TREE_HANDLE, (int) double_value, double_value, YAJL_NUMBER_DOUBLE_VALID);
+    
+    if (value != NULL)
+    {
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_bool(bool bool_value, Json::Node &outNode)
+{
+    yajl_val value = new_bool(bool_value);
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_array(Json::Node &outNode)
+{
+    yajl_val value = new_array();
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_map(Json::Node &outNode)
+{
+    yajl_val value = new_map();
+    
+    if (value != NULL)
+    {
+        if (!add_value(JSON_TREE_HANDLE, value))
+        {
+            free(value);
+            return false;
+        }
+    
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
 }
 
 string Json::Node::to_string() const
